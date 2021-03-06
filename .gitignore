@@ -1,0 +1,4 @@
+pyrelic/*.c
+pyrelic/*.so
+build/
+__pycache__
