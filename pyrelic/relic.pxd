@@ -151,6 +151,7 @@ cdef extern from "<relic/relic_pc.h>" nogil:
 
     # gx hash
     void g1_map(g1_t, const uint8_t*, int)
+    void g2_map(g2_t, const uint8_t*, int)
 
     # pairings
     void pc_map(gt_t, const g1_t, const g2_t)

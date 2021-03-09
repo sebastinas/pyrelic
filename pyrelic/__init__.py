@@ -38,6 +38,7 @@ from .g1 import (
 from .g2 import (
     G2,
     generator as generator_G2,
+    hash_to as hash_to_G2,
     mul_sim as mul_sim_G2,
     neutral as neutral_G2,
     rand as rand_G2,

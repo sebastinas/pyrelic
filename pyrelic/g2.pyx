@@ -22,6 +22,7 @@
 
 from . cimport relic
 from .bn cimport BN, from_int
+from libc.stdint cimport uint8_t
 
 
 cdef class G2:
@@ -120,6 +121,15 @@ cpdef G2 rand():
 
     cdef G2 value = G2()
     relic.g2_rand(value.value)
+    return value
+
+
+cpdef G2 hash_to(bytes data):
+    """Hashes a byte string to an element in G2."""
+
+    cdef const uint8_t[::1] view = data
+    cdef G2 value = G2()
+    relic.g2_map(value.value, &view[0], view.size);
     return value
 
 
