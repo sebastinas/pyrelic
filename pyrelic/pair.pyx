@@ -23,7 +23,7 @@
 from . cimport relic
 from .g1 cimport G1
 from .g2 cimport G2
-from .gt cimport GT
+from .gt cimport GT, neutral
 from libc.stdlib cimport malloc, free
 
 
@@ -43,7 +43,7 @@ def pair_product(*args):
     cdef relic.g2_t* g2s = NULL
     cdef GT result = GT()
     if length == 0:
-        raise ValueError("Expected list of length >= 1")
+        return neutral()
     if length == 1:
         cur_args_0, cur_args_1 = args[0]
         if not isinstance(cur_args_0, G1) or not isinstance(cur_args_1, G2):
