@@ -21,7 +21,7 @@
 # cython: language_level=3, bind=true
 
 from . cimport relic
-from .bn cimport BN
+from .bn cimport BN, from_int
 
 
 cdef class G2:
@@ -46,10 +46,24 @@ cdef class G2:
         relic.g2_add(result.value, self.value, other.value)
         return result
 
-    def __pow__(G2 self, BN exp, modulo):
+    def __pow__(G2 self, exp, modulo):
         cdef G2 result = G2()
-        relic.g2_mul(result.value, self.value, exp.value)
+        cdef BN tmp
+        if isinstance(exp, BN):
+            relic.g2_mul(result.value, self.value, (<BN>exp).value)
+        elif isinstance(exp, int):
+            if exp < 0:
+                relic.g2_neg(result.value, self.value)
+                tmp = from_int(-exp)
+                relic.g2_mul(result.value, result.value, tmp.value)
+            else:
+                tmp = from_int(exp)
+                relic.g2_mul(result.value, self.value, tmp.value)
+        else:
+            return NotImplemented
+
         return result
+
 
     def __hash__(self):
         return hash(bytes(self))

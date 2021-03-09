@@ -53,9 +53,6 @@ cdef class G1:
         if isinstance(exp, BN):
             relic.g1_mul(result.value, self.value, (<BN>exp).value)
         elif isinstance(exp, int):
-            #   if exp == -1:
-            #       relic.g1_neg(result.value, self.value)
-            #       return self
             if exp < 0:
                 relic.g1_neg(result.value, self.value)
                 tmp = from_int(-exp)

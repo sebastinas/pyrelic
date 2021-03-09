@@ -114,6 +114,7 @@ cdef extern from "<relic/relic_pc.h>" nogil:
     void g1_get_ord(bn_t)
     void g2_get_ord(bn_t)
     void g1_neg(g1_t, const g1_t)
+    void g2_neg(g2_t, const g2_t)
     void g1_mul_sim(g1_t, g1_t, bn_t, g1_t, bn_t)
     void g2_mul_sim(g2_t, g2_t, bn_t, g2_t, bn_t)
     void gt_exp(gt_t, const gt_t, const bn_t)
