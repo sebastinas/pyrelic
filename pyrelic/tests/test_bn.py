@@ -41,6 +41,42 @@ class TestBN(RelicTestCase):
 
         self.assertEqual(element, pyrelic.BN.from_str(str_element))
 
+    def test_int(self):
+        element = pyrelic.rand_BN_order()
+        int_element = int(element)
+
+        self.assertEqual(element, pyrelic.BN_from_int(int_element))
+
+    def test_add(self):
+        lhs = pyrelic.rand_BN_order()
+        rhs = pyrelic.rand_BN_order()
+
+        self.assertEqual(lhs + rhs, pyrelic.BN_from_int(int(lhs) + int(rhs)))
+
+    def test_sub(self):
+        lhs = pyrelic.rand_BN_order()
+        rhs = pyrelic.rand_BN_order()
+
+        self.assertEqual(lhs * rhs, pyrelic.BN_from_int(int(lhs) * int(rhs)))
+
+    def test_mul(self):
+        lhs = pyrelic.rand_BN_order()
+        rhs = pyrelic.rand_BN_order()
+
+        self.assertEqual(lhs * rhs, pyrelic.BN_from_int(int(lhs) * int(rhs)))
+
+    def test_mod(self):
+        lhs = pyrelic.rand_BN_order()
+        order = pyrelic.order()
+
+        self.assertEqual((lhs + order) % order, lhs)
+
+    def test_mod_inv(self):
+        lhs = pyrelic.rand_BN_order()
+        rhs = lhs.mod_inv(pyrelic.order())
+
+        self.assertEqual((lhs * rhs) % pyrelic.order(), pyrelic.BN_from_int(1))
+
 
 if __name__ == "__main__":
     unittest.main()
