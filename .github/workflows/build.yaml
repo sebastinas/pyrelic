@@ -26,3 +26,6 @@ jobs:
       run: |
         python setup.py build
         python setup.py build_ext -i
+    - name: Test with pytest
+      run: |
+        pytest .
