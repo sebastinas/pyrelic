@@ -224,7 +224,7 @@ cdef class BN:
         cdef int size = relic.bn_size_str(self.value, radix)
         buf = bytearray(size)
         relic.bn_write_str(buf, size, self.value, radix)
-        return buf.decode("ascii")
+        return buf[:size - 1].decode("ascii")
 
     def __str__(self):
         return self.str(radix=16)
