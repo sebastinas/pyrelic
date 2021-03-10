@@ -18,35 +18,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from .core import Relic
-from .bn import (
+from ._relic import (
+    Relic,
+    # BN
     BN,
-    from_int as BN_from_int,
-    rand_mod as rand_BN_mod,
-    zero as neutral_BN,
-)
-from .g1 import (
+    BN_from_int,
+    rand_BN_mod,
+    neutral_BN,
+    # G1
     G1,
-    generator as generator_G1,
-    hash_to as hash_to_G1,
-    mul_sim as mul_sim_G1,
-    neutral as neutral_G1,
+    generator_G1,
+    hash_to_G1,
+    mul_sim_G1,
+    neutral_G1,
     order,
-    rand as rand_G1,
+    rand_G1,
     rand_BN_order,
-)
-from .g2 import (
+    # G2
     G2,
-    generator as generator_G2,
-    hash_to as hash_to_G2,
-    mul_sim as mul_sim_G2,
-    neutral as neutral_G2,
-    rand as rand_G2,
-)
-from .gt import (
+    generator_G2,
+    hash_to_G2,
+    mul_sim_G2,
+    neutral_G2,
+    rand_G2,
+    # Gt
     GT,
-    generator as generator_GT,
-    neutral as neutral_GT,
-    rand as rand_GT,
+    generator_GT,
+    neutral_GT,
+    rand_GT,
+    # pairings
+    pair,
+    pair_product,
 )
-from .pair import pair, pair_product
