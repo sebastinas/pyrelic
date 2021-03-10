@@ -69,24 +69,45 @@ class GroupTests:
 
 
 class TestG1(GroupTests, RelicTestCase):
-    group = pyrelic.G1
-    generator = pyrelic.generator_G1
-    neutral = pyrelic.neutral_G1
-    rand = pyrelic.rand_G1
+    def group(self, *args):
+        return pyrelic.G1(*args)
+
+    def generator(self, *args):
+        return pyrelic.generator_G1(*args)
+
+    def neutral(self):
+        return pyrelic.neutral_G1()
+
+    def rand(self):
+        return pyrelic.rand_G1()
 
 
 class TestG2(GroupTests, RelicTestCase):
-    group = pyrelic.G2
-    generator = pyrelic.generator_G2
-    neutral = pyrelic.neutral_G2
-    rand = pyrelic.rand_G2
+    def group(self, *args):
+        return pyrelic.G2(*args)
+
+    def generator(self, *args):
+        return pyrelic.generator_G2(*args)
+
+    def neutral(self):
+        return pyrelic.neutral_G2()
+
+    def rand(self):
+        return pyrelic.rand_G2()
 
 
 class TestGT(GroupTests, RelicTestCase):
-    group = pyrelic.GT
-    generator = pyrelic.generator_GT
-    neutral = pyrelic.neutral_GT
-    rand = pyrelic.rand_GT
+    def group(self, *args):
+        return pyrelic.GT(*args)
+
+    def generator(self, *args):
+        return pyrelic.generator_GT(*args)
+
+    def neutral(self):
+        return pyrelic.neutral_GT()
+
+    def rand(self):
+        return pyrelic.rand_GT()
 
 
 if __name__ == "__main__":
