@@ -79,9 +79,9 @@ def pair_product(*args):
 
             relic.pc_map_sim(result.value, g1s, g2s, length)
         finally:
-            for idx in range(length):
+            for idx in reversed(range(length)):
                 relic.g2_free(g2s[idx])
-            for idx in range(length):
+            for idx in reversed(range(length)):
                 relic.g1_free(g1s[idx])
     finally:
         free(g2s)
