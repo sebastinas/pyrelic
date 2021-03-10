@@ -109,6 +109,8 @@ cdef extern from "<relic/relic_pc.h>" nogil:
     void gt_set_unity(gt_t)
     void g1_add(g1_t, const g1_t, const g1_t)
     void g2_add(g2_t, const g2_t, const g2_t)
+    void g1_sub(g1_t, const g1_t, const g1_t)
+    void g2_sub(g2_t, const g2_t, const g2_t)
     void g1_mul(g1_t, const g1_t, const bn_t)
     void g2_mul(g2_t, const g2_t, const bn_t)
     void gt_mul(gt_t, const gt_t, const gt_t)

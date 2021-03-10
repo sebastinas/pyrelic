@@ -295,6 +295,11 @@ cdef class G1:
         relic.g1_add(result.value, self.value, other.value)
         return result
 
+    def __truediv__(G1 self, G1 other):
+        cdef G1 result = G1()
+        relic.g1_sub(result.value, self.value, other.value)
+        return result
+
     def __pow__(G1 self, exp, modulo):
         cdef G1 result = G1()
         cdef BN tmp
@@ -441,6 +446,11 @@ cdef class G2:
     def __mul__(G2 self, G2 other):
         cdef G2 result = G2()
         relic.g2_add(result.value, self.value, other.value)
+        return result
+
+    def __truediv__(G2 self, G2 other):
+        cdef G2 result = G2()
+        relic.g2_sub(result.value, self.value, other.value)
         return result
 
     def __pow__(G2 self, exp, modulo):
