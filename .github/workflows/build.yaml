@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo add-apt-repository -u -y ppa:s-ramacher/ait
+        sudo apt install librelic-dev pkg-config
+        python -m pip install --upgrade pip
+        pip install pytest pkgconfig "cython >= 0.28"
+    - name: Build with Python ${{ matrix.python-version }}
+      run: |
+        python setup.py build
+        python setup.py build_ext -i
