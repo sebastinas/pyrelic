@@ -23,7 +23,7 @@
 from . cimport relic
 from .g1 cimport G1
 from .g2 cimport G2
-from .gt cimport GT, neutral
+from .gt cimport GT
 from libc.stdlib cimport malloc, free
 
 
@@ -42,9 +42,14 @@ def pair_product(*args):
     cdef relic.g1_t* g1s = NULL
     cdef relic.g2_t* g2s = NULL
     cdef GT result = GT()
+
     if length == 0:
-        return neutral()
+        # empty products return 1
+        relic.gt_set_unity(result.value)
+        return result
+
     if length == 1:
+        # fall back to pc_map if only one pair was provided
         cur_args_0, cur_args_1 = args[0]
         if not isinstance(cur_args_0, G1) or not isinstance(cur_args_1, G2):
             raise TypeError("Expected a tuple of (G1, G2) at index 0.")
