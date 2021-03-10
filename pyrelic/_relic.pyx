@@ -471,7 +471,6 @@ cdef class G2:
 
         return result
 
-
     def __hash__(self):
         return hash(bytes(self))
 
@@ -597,9 +596,22 @@ cdef class GT:
         relic.gt_mul(result.value, result.value, self.value)
         return result
 
-    def __pow__(GT self, BN exp, modulo):
+    def __pow__(GT self, exp, modulo):
         cdef GT result = GT()
-        relic.gt_exp(result.value, self.value, exp.value)
+        cdef BN tmp
+        if isinstance(exp, BN):
+            relic.gt_exp(result.value, self.value, (<BN>exp).value)
+        elif isinstance(exp, int):
+            if exp < 0:
+                relic.gt_inv(result.value, self.value)
+                tmp = BN_from_int(-exp)
+                relic.gt_exp(result.value, result.value, tmp.value)
+            else:
+                tmp = BN_from_int(exp)
+                relic.gt_exp(result.value, self.value, tmp.value)
+        else:
+            return NotImplemented
+
         return result
 
     def __hash__(self):
