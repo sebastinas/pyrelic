@@ -321,11 +321,15 @@ cdef class G1:
     def __hash__(self):
         return hash(bytes(self))
 
-    def __eq__(self, G1 other):
-        return relic.g1_cmp(self.value, other.value) == 0
+    def __eq__(self, other):
+        if not isinstance(other, G1):
+            return NotImplemented
+        return relic.g1_cmp(self.value, (<G1>other).value) == 0
 
-    def __ne__(self, G1 other):
-        return relic.g1_cmp(self.value, other.value) != 0
+    def __ne__(self, other):
+        if not isinstance(other, G1):
+            return NotImplemented
+        return relic.g1_cmp(self.value, (<G1>other).value) != 0
 
 #   def __nonzero__(self):
 #       return not relic.g1_is_infty(self.value)
@@ -474,11 +478,15 @@ cdef class G2:
     def __hash__(self):
         return hash(bytes(self))
 
-    def __eq__(self, G2 other):
-        return relic.g2_cmp(self.value, other.value) == 0
+    def __eq__(self, other):
+        if not isinstance(other, G2):
+            return NotImplemented
+        return relic.g2_cmp(self.value, (<G2>other).value) == 0
 
-    def __ne__(self, G2 other):
-        return relic.g2_cmp(self.value, other.value) != 0
+    def __ne__(self, other):
+        if not isinstance(other, G2):
+            return NotImplemented
+        return relic.g2_cmp(self.value, (<G2>other).value) != 0
 
     def __nonzero__(self):
         return not relic.g2_is_infty(self.value)
@@ -621,11 +629,15 @@ cdef class GT:
     def __hash__(self):
         return hash(bytes(self))
 
-    def __eq__(self, GT other):
-        return relic.gt_cmp(self.value, other.value) == 0
+    def __eq__(self, other):
+        if not isinstance(other, GT):
+            return NotImplemented
+        return relic.gt_cmp(self.value, (<GT>other).value) == 0
 
     def __ne__(self, GT other):
-        return relic.gt_cmp(self.value, other.value) != 0
+        if not isinstance(other, GT):
+            return NotImplemented
+        return relic.gt_cmp(self.value, (<GT>other).value) != 0
 
     def __bytes__(self):
         cdef int size = relic.gt_size_bin(self.value, 0)
