@@ -19,4 +19,7 @@ ext_modules = [
 setup(
     ext_modules=ext_modules,
     packages=["pyrelic"],
+    package_data={
+        "pyrelic": ["_relic.pyi", "py.typed"],
+    },
 )
