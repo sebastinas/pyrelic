@@ -174,7 +174,7 @@ def hpra_averify(
     return muprime == mu
 
 
-def evalf(msgs: Sequence[Sequence[BN]], weights: Sequence[BN]) -> Sequence[BN]:
+def evalf(msgs: Sequence[Sequence[BN]], weights: Sequence[BN]) -> Tuple[BN, ...]:
     l = len(msgs[0])
     order = pyrelic.order()
     return tuple(
@@ -316,14 +316,14 @@ def hpre_decrypt(sk: HPREPrivateKey, c: HPRECiphertext) -> Tuple[GT, ...]:
     )
 
 
-def hpre_eval(cs, weights):
-    level = cs[0].level
-    c1 = cs[0].c1 ** weights[0]
-    c2 = cs[1].c2 ** weights[0]
-    for c, w in zip(cs[1:], weights[1:]):
-        c1 *= c.c1 ** w
-        c2 *= c.c2 ** w
-    return HPRECiphertext(level, c1, c2)
+#   def hpre_eval(cs, weights):
+#       level = cs[0].level
+#       c1 = cs[0].c1 ** weights[0]
+#       c2 = cs[1].c2 ** weights[0]
+#       for c, w in zip(cs[1:], weights[1:]):
+#           c1 *= c.c1 ** w
+#           c2 *= c.c2 ** w
+#       return HPRECiphertext(level, c1, c2)
 
 
 def test_hpre() -> None:
