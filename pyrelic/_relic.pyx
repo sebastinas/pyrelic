@@ -585,6 +585,10 @@ cdef class GT:
     def __dealloc__(self):
         relic.gt_free(self.value)
 
+    def __imul__(GT self, GT other):
+        relic.gt_mul(self.value, self.value, other.value)
+        return self
+
     def __mul__(GT self, GT other):
         cdef GT result = GT()
         relic.gt_mul(result.value, self.value, other.value)
