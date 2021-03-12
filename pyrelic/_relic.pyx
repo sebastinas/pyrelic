@@ -334,17 +334,19 @@ cdef class G1:
             return NotImplemented
         return relic.g1_cmp(self.value, (<G1>other).value) != 0
 
-#   def __nonzero__(self):
-#       return not relic.g1_is_infty(self.value)
-
-    def normalize(self):
-        relic.g1_norm(self.value, self.value)
-
     def __bytes__(self):
         cdef int size = relic.g1_size_bin(self.value, 0)
         buf = bytearray(size)
         relic.g1_write_bin(buf, size, self.value, 0)
         return bytes(buf)
+
+    def normalize(self):
+        relic.g1_norm(self.value, self.value)
+
+    def invert(self):
+        cdef G1 result = G1()
+        relic.g1_neg(result.value, self.value)
+        return result
 
 
 cpdef BN order():
@@ -502,6 +504,11 @@ cdef class G2:
         buf = bytearray(size)
         relic.g2_write_bin(buf, size, self.value, 0)
         return bytes(buf)
+
+    def invert(self):
+        cdef G2 result = G2()
+        relic.g2_neg(result.value, self.value)
+        return result
 
 
 cpdef G2 generator_G2(BN exponent=None):
