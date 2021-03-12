@@ -270,7 +270,10 @@ def rand_BN_order():
 cpdef BN BN_from_int(object data):
     """Convert a Python integer to BN."""
 
-    return BN.from_str(hex(data)[2:])
+    cdef BN result
+    cdef bint is_negative = data < 0
+    result = BN.from_str(hex(abs(data))[2:])
+    return -result if is_negative else result
 
 
 cdef class G1:

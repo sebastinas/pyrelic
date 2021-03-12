@@ -71,12 +71,13 @@ class TestBN(RelicTestCase):
 
         self.assertEqual((lhs + order) % order, lhs)
 
-    def test_mod_inv(self):
+    def test_mod_neg(self):
         lhs = pyrelic.rand_BN_order()
         rhs = lhs.mod_neg(pyrelic.order())
 
         self.assertEqual(
-            lhs.mod_neg(pyrelic.order()), pyrelic.BN_from_int((-int(lhs)) % int(order))
+            lhs.mod_neg(pyrelic.order()),
+            pyrelic.BN_from_int((-int(lhs)) % int(pyrelic.order())),
         )
 
     def test_mod_inv(self):
