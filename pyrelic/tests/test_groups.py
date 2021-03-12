@@ -32,8 +32,9 @@ class GroupTests:
 
     def test_neutral(self):
         element = self.neutral()
+        exp = pyrelic.rand_BN_order()
 
-        self.assertEqual(element ** 2, element)
+        self.assertEqual(element ** exp, element)
 
     def test_generator(self):
         exp = pyrelic.rand_BN_order()
@@ -66,6 +67,25 @@ class GroupTests:
         exp = pyrelic.rand_BN_order()
 
         self.assertEqual(element ** int(exp), element ** exp)
+
+    def test_exp_negative(self):
+        element = self.rand()
+        exp = pyrelic.rand_BN_order()
+
+        self.assertEqual(element ** -int(exp), element ** -exp)
+        self.assertEqual(element ** -exp, self.neutral() / element ** exp)
+        self.assertEqual(element ** -exp, (self.neutral() / element) ** exp)
+
+    def test_exp_0(self):
+        element = self.rand()
+
+        self.assertEqual(element ** 0, self.neutral())
+        self.assertEqual(element ** pyrelic.neutral_BN(), self.neutral())
+
+    def test_exp_1(self):
+        element = self.rand()
+
+        self.assertEqual(element ** 1, element)
 
 
 class TestG1(GroupTests, RelicTestCase):
