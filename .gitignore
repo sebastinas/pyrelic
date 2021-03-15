@@ -2,3 +2,4 @@ pyrelic/*.c
 pyrelic/*.so
 build/
 __pycache__
+.mypy_cache/
