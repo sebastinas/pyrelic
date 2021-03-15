@@ -115,7 +115,7 @@ cdef class BN:
             return NotImplemented
         return self
 
-    def __sub__(BN self, BN other):
+    def __sub__(self, other):
         cdef BN result
         cdef BN self_bn
 
@@ -138,7 +138,7 @@ cdef class BN:
         relic.bn_neg(result.value, self.value)
         return result
 
-    def __imul__(self, BN other):
+    def __imul__(self, other):
         cdef BN tmp
         if isinstance(other, BN):
             relic.bn_mul(self.value, self.value, (<BN>other).value)
@@ -149,7 +149,7 @@ cdef class BN:
             return NotImplemented
         return self
 
-    def __mul__(BN self, BN other):
+    def __mul__(self, other):
         cdef BN result
         cdef BN self_bn
 
