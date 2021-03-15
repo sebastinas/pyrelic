@@ -28,6 +28,7 @@ class TestBN(RelicTestCase):
         zero = pyrelic.neutral_BN()
         self.assertFalse(zero)
         self.assertEqual(int(zero), 0)
+        self.assertEqual(pyrelic.BN_from_int(0), zero)
 
     def test_bytes(self):
         element = pyrelic.rand_BN_order()
@@ -46,6 +47,7 @@ class TestBN(RelicTestCase):
         int_element = int(element)
 
         self.assertEqual(element, pyrelic.BN_from_int(int_element))
+        self.assertEqual(-element, pyrelic.BN_from_int(-int_element))
 
     def test_add(self):
         lhs = pyrelic.rand_BN_order()
