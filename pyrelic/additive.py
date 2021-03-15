@@ -77,7 +77,7 @@ class G1:
     def __ne__(self, other: Any) -> bool:
         if not isinstance(other, G1):
             return NotImplemented
-        return self.element == other.element
+        return self.element != other.element
 
     def __hash__(self) -> int:
         return hash(self.element)
@@ -158,7 +158,7 @@ class G2:
     def __ne__(self, other: Any) -> bool:
         if not isinstance(other, G2):
             return NotImplemented
-        return self.element == other.element
+        return self.element != other.element
 
     def __hash__(self) -> int:
         return hash(self.element)
