@@ -18,7 +18,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import annotations
 from typing import Union, Optional, Tuple, Any, Sequence
 from . import _relic
 from ._relic import BN, neutral_BN, rand_BN_mod, rand_BN_order, BN_from_int
@@ -42,31 +41,31 @@ class G1:
         else:
             self.element = _relic.G1(base)
 
-    def __add__(self, other: G1) -> G1:
+    def __add__(self, other: "G1") -> "G1":
         return G1(self.element * other.element)
 
-    def __iadd__(self, other: G1) -> G1:
+    def __iadd__(self, other: "G1") -> "G1":
         self.element *= other.element
         return self
 
-    def __sub__(self, other: G1) -> G1:
+    def __sub__(self, other: "G1") -> "G1":
         return G1(self.element / other.element)
 
-    def __isub__(self, other: G1) -> G1:
+    def __isub__(self, other: "G1") -> "G1":
         self.element = self.element / other.element
         return self
 
-    def __neg__(self) -> G1:
+    def __neg__(self) -> "G1":
         return G1(self.element.invert())
 
-    def __mul__(self, rhs: Union[int, BN]) -> G1:
+    def __mul__(self, rhs: Union[int, BN]) -> "G1":
         return G1(self.element ** rhs)
 
-    def __imul__(self, rhs: Union[int, BN]) -> G1:
+    def __imul__(self, rhs: Union[int, BN]) -> "G1":
         self.element = self.element ** rhs
         return self
 
-    def __rmul__(self, lhs: Union[int, BN]) -> G1:
+    def __rmul__(self, lhs: Union[int, BN]) -> "G1":
         return G1(self.element ** lhs)
 
     def __eq__(self, other: Any) -> bool:
@@ -123,31 +122,31 @@ class G2:
         else:
             self.element = _relic.G2(base)
 
-    def __add__(self, other: G2) -> G2:
+    def __add__(self, other: "G2") -> "G2":
         return G2(self.element * other.element)
 
-    def __iadd__(self, other: G2) -> G2:
+    def __iadd__(self, other: "G2") -> "G2":
         self.element *= other.element
         return self
 
-    def __sub__(self, other: G2) -> G2:
+    def __sub__(self, other: "G2") -> "G2":
         return G2(self.element / other.element)
 
-    def __isub__(self, other: G2) -> G2:
+    def __isub__(self, other: "G2") -> "G2":
         self.element = self.element / other.element
         return self
 
-    def __neg__(self) -> G2:
+    def __neg__(self) -> "G2":
         return G2(self.element.invert())
 
-    def __mul__(self, rhs: Union[int, BN]) -> G2:
+    def __mul__(self, rhs: Union[int, BN]) -> "G2":
         return G2(self.element ** rhs)
 
-    def __imul__(self, rhs: Union[int, BN]) -> G2:
+    def __imul__(self, rhs: Union[int, BN]) -> "G2":
         self.element = self.element ** rhs
         return self
 
-    def __rmul__(self, lhs: Union[int, BN]) -> G2:
+    def __rmul__(self, lhs: Union[int, BN]) -> "G2":
         return G2(self.element ** lhs)
 
     def __eq__(self, other: Any) -> bool:
