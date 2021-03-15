@@ -21,13 +21,16 @@
 # cython: language_level=3, binding=True
 
 from . cimport relic
+from cpython cimport int as Integer
 
 cdef class BN:
     cdef relic.bn_t value
 
+    cdef str as_string(self, int radix=*)
+
 cpdef BN neutral_BN()
 cpdef BN rand_BN_mod(BN mod)
-cpdef BN BN_from_int(object data)
+cpdef BN BN_from_int(Integer data)
 
 cdef class G1:
     cdef relic.g1_t value

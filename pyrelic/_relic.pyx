@@ -22,8 +22,13 @@
 
 from . cimport relic
 from cpython.object cimport Py_LT, Py_EQ, Py_GT, Py_LE, Py_NE, Py_GE
+from cpython cimport int as Integer
 from libc.stdint cimport uint8_t
 from libc.stdlib cimport malloc, free
+
+
+cdef extern from "Python.h":
+    size_t _PyLong_NumBits(object) except -1
 
 
 cdef class Relic:
@@ -229,17 +234,29 @@ cdef class BN:
         relic.bn_write_bin(buf, size, self.value)
         return bytes(buf)
 
-    def str(self, int radix=16):
+    cdef str as_string(self, int radix=16):
         cdef int size = relic.bn_size_str(self.value, radix)
         buf = bytearray(size)
         relic.bn_write_str(buf, size, self.value, radix)
         return buf[:size - 1].decode("ascii")
 
     def __str__(self):
-        return self.str(radix=16)
+        return self.as_string(radix=16)
 
     def __int__(self):
-        return int(str(self), 16)
+        cdef int length = relic.bn_size_raw(self.value)
+        cdef int idx
+        cdef relic.dig_t* buf = <relic.dig_t*>malloc(sizeof(relic.dig_t) * length)
+        cdef Integer result = 0
+
+        try:
+            relic.bn_write_raw(buf, length, self.value)
+            for idx in range(length):
+                result |= Integer(buf[idx]) << (relic.WSIZE * idx)
+        finally:
+            free(buf)
+
+        return result
 
     @staticmethod
     def from_str(str data, int radix=16):
@@ -276,13 +293,33 @@ def rand_BN_order():
     return value
 
 
-cpdef BN BN_from_int(object data):
+cdef BN BN_from_int_implementation(Integer data):
+    cdef int length = (_PyLong_NumBits(data) + relic.WSIZE - 1) // relic.WSIZE
+    cdef int idx
+    cdef relic.dig_t mask = -1
+    cdef BN result = BN()
+    cdef relic.dig_t* buf = <relic.dig_t*>malloc(sizeof(relic.dig_t) * length)
+
+    try:
+        for idx in range(length):
+            buf[idx] = (data >> (relic.WSIZE * idx)) & mask
+        relic.bn_read_raw(result.value, buf, length)
+    finally:
+        free(buf)
+
+    return result
+
+
+cpdef BN BN_from_int(Integer data):
     """Convert a Python integer to BN."""
 
     cdef BN result
-    cdef bint is_negative = data < 0
-    result = BN.from_str(hex(abs(data))[2:])
-    return -result if is_negative else result
+    if data < 0:
+        result = BN_from_int_implementation(-data)
+        relic.bn_neg(result.value, result.value)
+    else:
+        result = BN_from_int_implementation(data)
+    return result
 
 
 cdef class G1:

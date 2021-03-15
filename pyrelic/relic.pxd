@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from libc.stdint cimport uint8_t
+from libc.stdint cimport uint8_t, uint64_t
 
 cdef extern from "<relic/relic_core.h>" nogil:
     int RLC_OK
@@ -31,6 +31,10 @@ cdef extern from "<relic/relic_core.h>" nogil:
     int core_clean()
 
 cdef extern from "<relic/relic_bn.h>" nogil:
+    int WSIZE
+
+    ctypedef uint64_t dig_t
+
     ctypedef struct bn_st:
         pass
     ctypedef bn_st bn_t[1]
@@ -60,6 +64,9 @@ cdef extern from "<relic/relic_bn.h>" nogil:
     void bn_read_str(bn_t, const char*, int, int)
     void bn_write_str(char*, int, const bn_t, int)
     int bn_size_str(const bn_t, int)
+    void bn_read_raw(bn_t, const dig_t*, int)
+    void bn_write_raw(dig_t*, int, const bn_t)
+    int bn_size_raw(const bn_t)
 
     # bn comparison
     int bn_cmp(const bn_t, const bn_t)
