@@ -90,10 +90,13 @@ cdef class BN:
         cdef BN result
         cdef BN self_bn
 
-        if not isinstance(self, BN):
+        if isinstance(self, BN):
+            self_bn = <BN>self
+        elif isinstance(self, int):
+            self_bn = BN_from_int(self)
+        else:
             return NotImplemented
 
-        self_bn = <BN>self
         if isinstance(other, BN):
             result = BN()
             relic.bn_add(result.value, self_bn.value, (<BN>other).value)
@@ -119,10 +122,13 @@ cdef class BN:
         cdef BN result
         cdef BN self_bn
 
-        if not isinstance(self, BN):
+        if isinstance(self, BN):
+            self_bn = <BN>self
+        elif isinstance(self, int):
+            self_bn = BN_from_int(self)
+        else:
             return NotImplemented
 
-        self_bn = <BN>self
         if isinstance(other, BN):
             result = BN()
             relic.bn_sub(result.value, self_bn.value, (<BN>other).value)
@@ -153,10 +159,13 @@ cdef class BN:
         cdef BN result
         cdef BN self_bn
 
-        if not isinstance(self, BN):
+        if isinstance(self, BN):
+            self_bn = <BN>self
+        elif isinstance(self, int):
+            self_bn = BN_from_int(self)
+        else:
             return NotImplemented
 
-        self_bn = <BN>self
         if isinstance(other, BN):
             result = BN()
             relic.bn_mul(result.value, self_bn.value, (<BN>other).value)
