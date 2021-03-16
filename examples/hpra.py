@@ -87,6 +87,9 @@ class HPRASID:
     def __init__(self, _id: G2) -> None:
         self.id = _id
 
+    def __bytes__(self) -> bytes:
+        return bytes(self.id)
+
 
 class HPRAVMK:
     def __init__(self, alpha: BN, pp: HPRAParams) -> None:
@@ -165,10 +168,10 @@ def hpra_averify(
         (mul_sim_G1(mk.pp.gs, msg), ghat),
         *(
             (
-                hpra_hash(tau, id.id) ** weight,
+                hpra_hash(tau, _id) ** weight,
                 ghat,
             )
-            for id, weight in zip(ids, weights)
+            for _id, weight in zip(ids, weights)
         ),
     )
     return muprime == mu
@@ -503,10 +506,10 @@ def comb_averify(mk, cs, mu, tau, ids, weights):
             * pair_product(
                 *(
                     (
-                        hpra_hash(tau, id.id) ** weight,
+                        hpra_hash(tau, _id) ** weight,
                         ghat,
                     )
-                    for id, weight in zip(ids, weights)
+                    for _id, weight in zip(ids, weights)
                 ),
             )
         ) ** mk.alpha
