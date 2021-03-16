@@ -108,8 +108,8 @@ def hpra_sgen(pp: HPRAParams) -> Tuple[HPRASID, HPRASPrivateKey, HPRASPublicKey]
     return HPRASID(g2beta), HPRASPrivateKey(beta, pk), pk
 
 
-def hpra_hash(tau: Any, other: Any) -> G1:
-    return hash_to_G1(b"|".join((bytes(tau), bytes(other))))
+def hpra_hash(*args: Any) -> G1:
+    return hash_to_G1(b"|".join(bytes(arg) for arg in args))
 
 
 def hpra_srgen(sk: HPRASPrivateKey, aux: None) -> None:
@@ -232,6 +232,14 @@ class HPREPublicKey:
     def __init__(self, pk1: Sequence[GT], pk2: Sequence[G2]) -> None:
         self.pk1 = pk1
         self.pk2 = pk2
+
+    def __bytes__(self) -> bytes:
+        return b"||".join(
+            (
+                b"|".join(bytes(x) for x in self.pk1),
+                b"|".join(bytes(x) for x in self.pk2),
+            )
+        )
 
 
 def hpre_keygen(l: int) -> Tuple[HPREPrivateKey, HPREPublicKey]:
