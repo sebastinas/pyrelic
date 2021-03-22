@@ -46,6 +46,10 @@ cdef class Relic:
         self.code_pairing = relic.RLC_ERR
 
     def __enter__(self):
+        # relic upto 0.5.0 does not perform internal refcounting
+        if relic.core_get() is not NULL:
+            return self
+
         self.code_core = relic.core_init()
         if self.code_core != relic.RLC_OK:
             raise RuntimeError("Failed to initialize relic!")
@@ -185,11 +189,6 @@ cdef class BN:
         cdef BN result = BN()
         relic.bn_mod(result.value, self.value, other.value)
         return result
-
-#   def mod_inv(BN self, BN mod):
-#       cdef BN result = BN()
-#       relic.bn_mod_inv(result.value, self.value, mod.value)
-#       return result
 
     def mod_inv(BN self, BN mod):
         cdef BN result = BN()

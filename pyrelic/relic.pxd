@@ -26,9 +26,14 @@ cdef extern from "<relic/relic_core.h>" nogil:
     int RLC_NEG
     int RLC_POS
 
+    ctypedef struct ctx_t:
+        pass
+
     # relic init and clean up
     int core_init()
     int core_clean()
+    ctx_t* core_get()
+
 
 cdef extern from "<relic/relic_bn.h>" nogil:
     int WSIZE
