@@ -31,6 +31,15 @@ cdef extern from "Python.h":
     size_t _PyLong_NumBits(object) except -1
 
 
+cdef extern from *:
+    """
+    #include <relic/relic_conf.h>
+    #if !defined(WITH_PC)
+    #error "Relic built without pairing support!"
+    #endif
+    """
+
+
 cdef class Relic:
     """Context manager to intialize relic.
 
