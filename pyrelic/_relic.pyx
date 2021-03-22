@@ -731,14 +731,14 @@ cpdef GT rand_GT():
     return value
 
 cpdef GT neutral_GT():
-    """Returns the neutral element of G2."""
+    """Returns the neutral element of GT."""
 
     cdef GT value = GT()
     relic.gt_set_unity(value.value)
     return value
 
 
-def pair(G1 g1, G2 g2):
+cpdef GT pair(G1 g1, G2 g2):
     """Computes the pairing of g1 and g2."""
 
     cdef GT result = GT()
@@ -747,7 +747,7 @@ def pair(G1 g1, G2 g2):
 
 
 def pair_product(*args):
-    """Given a list if pairs of G1 and G2 elements, computes the product of their pairings."""
+    """Given a list of pairs of G1 and G2 elements, computes the product of their pairings."""
 
     cdef int length = len(args), idx
     cdef relic.g1_t* g1s = NULL
