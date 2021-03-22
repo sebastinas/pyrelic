@@ -35,6 +35,10 @@ cdef extern from "<relic/relic_core.h>" nogil:
     ctx_t* core_get()
 
 
+cdef extern from "<relic/relic_conf.h>" nogil:
+    cdef const char* RLC_VERSION
+
+
 cdef extern from "<relic/relic_bn.h>" nogil:
     int WSIZE
 
