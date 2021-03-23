@@ -1,7 +1,8 @@
 # Python bindings for relic
 
-`pyrelic` provides Python bindings for [relic](https://github.com/relic-toolkit/relic). Note though,
-that the bindings are driven by my personal needs and they do not cover the full `relic` API.
+`python-relic` provides Python bindings for [relic](https://github.com/relic-toolkit/relic). Note
+though, that the bindings are driven by my personal needs and they do not cover the full `relic`
+API.
 
 ## Dependencies
 
@@ -11,9 +12,9 @@ that the bindings are driven by my personal needs and they do not cover the full
 
 ## Quick installation guide
 
-`pyrelic` can be installed via `pip`:
+`python-relic` can be installed via `pip`:
 ```sh
-pip install pyrelic
+pip install python-relic
 ```
 or by running:
 ```sh
