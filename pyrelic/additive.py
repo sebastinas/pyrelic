@@ -84,7 +84,7 @@ class G1:
     def __bytes__(self) -> bytes:
         return bytes(self.element)
 
-    def __repr__(self) -> bytes:
+    def __repr__(self) -> str:
         return f"G1({bytes(self)!r})"
 
 
@@ -168,7 +168,7 @@ class G2:
     def __bytes__(self) -> bytes:
         return bytes(self.element)
 
-    def __repr__(self) -> bytes:
+    def __repr__(self) -> str:
         return f"G2({bytes(self)!r})"
 
 
