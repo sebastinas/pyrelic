@@ -246,6 +246,9 @@ cdef class BN:
         relic.bn_write_bin(buf, size, self.value)
         return bytes(buf)
 
+    def __repr__(self):
+        return f"BN({bytes(self)!r})"
+
     cdef str as_string(self, int radix=16):
         cdef int size = relic.bn_size_str(self.value, radix)
         buf = bytearray(size)
@@ -397,6 +400,9 @@ cdef class G1:
         buf = bytearray(size)
         relic.g1_write_bin(buf, size, self.value, 0)
         return bytes(buf)
+
+    def __repr__(self):
+        return f"G1({bytes(self)!r})"
 
     def normalize(self):
         relic.g1_norm(self.value, self.value)
@@ -563,6 +569,9 @@ cdef class G2:
         relic.g2_write_bin(buf, size, self.value, 0)
         return bytes(buf)
 
+    def __repr__(self):
+        return f"G2({bytes(self)!r})"
+
     def invert(self):
         cdef G2 result = G2()
         relic.g2_neg(result.value, self.value)
@@ -712,6 +721,9 @@ cdef class GT:
         buf = bytearray(size)
         relic.gt_write_bin(buf, size, self.value, 0)
         return bytes(buf)
+
+    def __repr__(self):
+        return f"GT({bytes(self)!r})"
 
 
 cpdef GT generator_GT(BN exponent=None):

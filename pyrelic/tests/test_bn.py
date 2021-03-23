@@ -20,6 +20,7 @@
 
 import unittest
 import pyrelic
+from pyrelic import BN
 from . import RelicTestCase
 
 
@@ -34,7 +35,7 @@ class TestBN(RelicTestCase):
         element = pyrelic.rand_BN_order()
         bytes_element = bytes(element)
 
-        self.assertEqual(element, pyrelic.BN(bytes_element))
+        self.assertEqual(element, BN(bytes_element))
 
     def test_str(self):
         element = pyrelic.rand_BN_order()
@@ -48,6 +49,12 @@ class TestBN(RelicTestCase):
 
         self.assertEqual(element, pyrelic.BN_from_int(int_element))
         self.assertEqual(-element, pyrelic.BN_from_int(-int_element))
+
+    def test_repr(self):
+        element = pyrelic.rand_BN_order()
+        repr_element = repr(element)
+
+        self.assertEqual(element, eval(repr_element))
 
     def test_add(self):
         lhs = pyrelic.rand_BN_order()

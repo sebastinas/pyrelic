@@ -20,6 +20,7 @@
 
 import unittest
 import pyrelic
+from pyrelic import G1, G2, GT
 from . import RelicTestCase
 
 
@@ -29,6 +30,12 @@ class GroupTests:
         bytes_element = bytes(element)
 
         self.assertEqual(element, self.group(bytes_element))
+
+    def test_repr(self):
+        element = self.rand()
+        repr_element = repr(element)
+
+        self.assertEqual(element, eval(repr_element))
 
     def test_neutral(self):
         element = self.neutral()
@@ -90,7 +97,7 @@ class GroupTests:
 
 class TestG1(GroupTests, RelicTestCase):
     def group(self, *args):
-        return pyrelic.G1(*args)
+        return G1(*args)
 
     def generator(self, *args):
         return pyrelic.generator_G1(*args)
@@ -104,7 +111,7 @@ class TestG1(GroupTests, RelicTestCase):
 
 class TestG2(GroupTests, RelicTestCase):
     def group(self, *args):
-        return pyrelic.G2(*args)
+        return G2(*args)
 
     def generator(self, *args):
         return pyrelic.generator_G2(*args)
@@ -118,7 +125,7 @@ class TestG2(GroupTests, RelicTestCase):
 
 class TestGT(GroupTests, RelicTestCase):
     def group(self, *args):
-        return pyrelic.GT(*args)
+        return GT(*args)
 
     def generator(self, *args):
         return pyrelic.generator_GT(*args)
