@@ -16,7 +16,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo add-apt-repository -u -y ppa:s-ramacher/ait
-        sudo apt install librelic-dev pkg-config
+        sudo apt-get install librelic-dev pkg-config
         python -m pip install --upgrade pip
         pip install setuptools wheel "Cython >= 0.28" pkgconfig
     - name: Build sdist

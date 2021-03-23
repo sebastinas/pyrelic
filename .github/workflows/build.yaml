@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo add-apt-repository -u -y ppa:s-ramacher/ait
-        sudo apt install librelic-dev pkg-config
+        sudo apt-get install librelic-dev pkg-config
         python -m pip install --upgrade pip
         pip install pytest pkgconfig "cython >= 0.28"
     - name: Build with Python ${{ matrix.python-version }}
