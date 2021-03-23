@@ -1,0 +1,6 @@
+include pyrelic/_relic.c
+include pyrelic/_relic.pxd
+include pyrelic/_relic.pyi
+include pyrelic/_relic.pyx
+include pyrelic/py.typed
+include CHANGELOG.md

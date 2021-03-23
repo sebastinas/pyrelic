@@ -3,3 +3,5 @@ pyrelic/*.so
 build/
 __pycache__
 .mypy_cache/
+python_relic.egg-info/
+dist/
