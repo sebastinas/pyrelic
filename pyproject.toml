@@ -3,6 +3,7 @@ requires = [
   "setuptools >= 43",
   "Cython >= 0.28",
   "wheel",
+  "pkgconfig",
 ]
 
 [tool.black]
