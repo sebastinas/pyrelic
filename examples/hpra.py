@@ -23,6 +23,8 @@
 Based on David Derler, Sebastian Ramacher, Danial Slamanig: Homomorphic Proxy
 Re-Authenticators and Applications to Verifiable Multi-User Data Aggregration.
 Financial Crytography 2017. https://eprint.iacr.org/2017/086.pdf.
+
+This example requires Python >= 3.8.
 """
 
 import pyrelic
@@ -51,58 +53,69 @@ from pyrelic import (
 import math
 import itertools
 import enum
-from typing import Union, List, Tuple, Sequence, Any, Optional, TypeVar, Callable, cast
+from dataclasses import dataclass, field
+from typing import Union, Sequence, Any, Optional, TypeVar, Callable, cast
 
 T = TypeVar("T")
 
 # Scheme 2
 
 
+@dataclass
 class HPRAParams:
-    def __init__(self, l: int, gs: Sequence[G1]) -> None:
-        self.l = l
-        self.gs = gs
+    """Public parameters for HPRA."""
+
+    l: int
+    gs: Sequence[G1]
+    order: BN = field(init=False)
+
+    def __post_init__(self) -> None:
         self.order = pyrelic.order()
 
 
 def hpra_params(l: int) -> HPRAParams:
+    """Generate public parameters for HPRA."""
+
     return HPRAParams(l, tuple(rand_G1() for i in range(l)))
 
 
+@dataclass
 class HPRASPublicKey:
-    def __init__(self, g2beta: G2, g2betainv: G2, pp: HPRAParams) -> None:
-        self.pk1 = g2beta
-        self.pk2 = g2betainv
-        self.pp = pp
+    pk1: G2
+    pk2: G2
+    pp: HPRAParams
 
 
+@dataclass
 class HPRASPrivateKey:
-    def __init__(self, beta: BN, pk: HPRASPublicKey) -> None:
-        self.beta = beta
-        self.pk = pk
-        self.pp = pk.pp
+    beta: BN
+    pk: HPRASPublicKey
+    pp: HPRAParams = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.pp = self.pk.pp
 
 
+@dataclass
 class HPRASID:
-    def __init__(self, _id: G2) -> None:
-        self.id = _id
+    id: G2
 
     def __bytes__(self) -> bytes:
         return bytes(self.id)
 
 
+@dataclass
 class HPRAVMK:
-    def __init__(self, alpha: BN, pp: HPRAParams) -> None:
-        self.alpha = alpha
-        self.pp = pp
+    alpha: BN
+    pp: HPRAParams
 
 
+@dataclass
 class HPRAAK:
-    def __init__(self, ak):
-        self.ak = ak
+    ak: G2
 
 
-def hpra_sgen(pp: HPRAParams) -> Tuple[HPRASID, HPRASPrivateKey, HPRASPublicKey]:
+def hpra_sgen(pp: HPRAParams) -> tuple[HPRASID, HPRASPrivateKey, HPRASPublicKey]:
     beta = rand_BN_order()
     g2beta = generator_G2(beta)
     g2betainv = generator_G2(beta.mod_inv(pp.order))
@@ -119,7 +132,7 @@ def hpra_srgen(sk: HPRASPrivateKey, aux: None) -> None:
     return None
 
 
-def hpra_vgen(pp: HPRAParams) -> Tuple[HPRAVMK, None]:
+def hpra_vgen(pp: HPRAParams) -> tuple[HPRAVMK, None]:
     alpha = rand_BN_order()
     return HPRAVMK(alpha, pp), None
 
@@ -147,7 +160,7 @@ def hpra_agg(
     msgs: Sequence[T],
     weights: Sequence[BN],
     evalf: Callable[[Sequence[T], Sequence[BN]], T],
-) -> Tuple[T, GT]:
+) -> tuple[T, GT]:
     msg = evalf(msgs, weights)
     mu = pair_product(
         *((sigma ** weight, ak.ak) for sigma, weight, ak in zip(sigmas, weights, aks))
@@ -177,7 +190,7 @@ def hpra_averify(
     return muprime == mu
 
 
-def evalf(msgs: Sequence[Sequence[BN]], weights: Sequence[BN]) -> Tuple[BN, ...]:
+def evalf(msgs: Sequence[Sequence[BN]], weights: Sequence[BN]) -> tuple[BN, ...]:
     l = len(msgs[0])
     order = pyrelic.order()
     return tuple(
@@ -225,16 +238,16 @@ def test_hpra() -> None:
 # Scheme 3
 
 
+@dataclass
 class HPREPrivateKey:
-    def __init__(self, a1: Sequence[BN], a2: Sequence[BN]) -> None:
-        self.a1 = a1
-        self.a2 = a2
+    a1: Sequence[BN]
+    a2: Sequence[BN]
 
 
+@dataclass
 class HPREPublicKey:
-    def __init__(self, pk1: Sequence[GT], pk2: Sequence[G2]) -> None:
-        self.pk1 = pk1
-        self.pk2 = pk2
+    pk1: Sequence[GT]
+    pk2: Sequence[G2]
 
     def __bytes__(self) -> bytes:
         return b"||".join(
@@ -245,7 +258,7 @@ class HPREPublicKey:
         )
 
 
-def hpre_keygen(l: int) -> Tuple[HPREPrivateKey, HPREPublicKey]:
+def hpre_keygen(l: int) -> tuple[HPREPrivateKey, HPREPublicKey]:
     assert l >= 1
     a1 = tuple(rand_BN_order() for _ in range(l))
     a2 = tuple(rand_BN_order() for _ in range(l))
@@ -259,9 +272,9 @@ def hpre_keygen(l: int) -> Tuple[HPREPrivateKey, HPREPublicKey]:
     return sk, pk
 
 
+@dataclass
 class HPREReEncKey:
-    def __init__(self, rk: Sequence[G2]) -> None:
-        self.rk = rk
+    rk: Sequence[G2]
 
 
 def hpre_rg(sk: HPREPrivateKey, pk: HPREPublicKey) -> HPREReEncKey:
@@ -274,16 +287,11 @@ class HPRECiphertextLevel(enum.Enum):
     LR = enum.auto()
 
 
+@dataclass
 class HPRECiphertext:
-    def __init__(
-        self,
-        level: HPRECiphertextLevel,
-        c0: Union[G1, GT, Sequence[GT]],
-        cs: Sequence[GT],
-    ) -> None:
-        self.level = level
-        self.c0 = c0
-        self.cs = cs
+    level: HPRECiphertextLevel
+    c0: Union[G1, GT, Sequence[GT]]
+    cs: Sequence[GT]
 
 
 def hpre_encrypt(
@@ -311,7 +319,7 @@ def hpre_rencrypt(rk: HPREReEncKey, c: HPRECiphertext) -> HPRECiphertext:
     )
 
 
-def hpre_decrypt(sk: HPREPrivateKey, c: HPRECiphertext) -> Tuple[GT, ...]:
+def hpre_decrypt(sk: HPREPrivateKey, c: HPRECiphertext) -> tuple[GT, ...]:
     order = pyrelic.order()
     if c.level == HPRECiphertextLevel.L1:
         return tuple(cs / cast(GT, c.c0) ** a1 for cs, a1 in zip(c.cs, sk.a1))
@@ -359,27 +367,21 @@ def test_hpre() -> None:
 # Scheme 4
 
 
+@dataclass
 class CombSPrivateKey:
-    def __init__(self, sk, rsk, rpk):
-        self.sk = sk
-        self.rsk = rsk
-        self.rpk = rpk
+    sk: HPRASPrivateKey
+    rsk: HPREPrivateKey
+    rpk: HPREPublicKey
 
 
-#   class CombSPublicKey:
-#       def __init__(self, pk, rpk):
-#           self.pk = pk
-#           self.rpk = rpk
-
-
-def comb_params(l):
+def comb_params(l: int) -> HPRAParams:
     """Generate public parameters for HPRA."""
 
     assert l >= 1
     return hpra_params(l)
 
 
-def comb_sgen(pp):
+def comb_sgen(pp: HPRAParams) -> tuple[HPRASID, CombSPrivateKey, HPRASPublicKey]:
     """Generate "signing" key, i.e., the key of the source."""
 
     id, sk, pk = hpra_sgen(pp)
@@ -388,19 +390,19 @@ def comb_sgen(pp):
     return id, CombSPrivateKey(sk, rsk, rpk), pk
 
 
+@dataclass
 class CombMK:
-    def __init__(self, mk, rsk):
-        self.mk = mk
-        self.rsk = rsk
+    mk: HPRAVMK
+    rsk: HPREPrivateKey
 
 
+@dataclass
 class CombAUX:
-    def __init__(self, aux, rpk):
-        self.aux = aux
-        self.rpk = rpk
+    aux: None
+    rpk: HPREPublicKey
 
 
-def comb_vgen(pp):
+def comb_vgen(pp: HPRAParams) -> tuple[CombMK, CombAUX]:
     """Generate "verification" key, i.e., the key of the receiver."""
 
     mk, aux = hpra_vgen(pp)
@@ -408,13 +410,13 @@ def comb_vgen(pp):
     return CombMK(mk, rsk), CombAUX(aux, rpk)
 
 
+@dataclass
 class CombSignature:
-    def __init__(self, sigma, c):
-        self.sigma = sigma
-        self.c = c
+    sigma: G1
+    c: HPRECiphertext
 
 
-def comb_sign(sk, ms, tau):
+def comb_sign(sk: CombSPrivateKey, ms: Sequence[BN], tau: Any) -> CombSignature:
     """Sign and encrypt message (exponents) with respect to given tag tau."""
 
     r = generator_G1(rand_BN_order())
@@ -438,12 +440,12 @@ def comb_sign(sk, ms, tau):
     return CombSignature(sigma, c)
 
 
+@dataclass
 class CombSRKey:
-    def __init__(self, prk):
-        self.prki = prk
+    prki: HPREReEncKey
 
 
-def comb_srgen(sk, aux):
+def comb_srgen(sk: CombSPrivateKey, aux: CombAUX) -> CombSRKey:
     """Generate reencryption key."""
 
     # rk = hpra_srgen(sk.sk, None) # only returns None
@@ -451,38 +453,46 @@ def comb_srgen(sk, aux):
     return CombSRKey(prk)
 
 
+@dataclass
 class CombAK:
-    def __init__(self, ak, rk):
-        self.ak = ak
-        self.rk = rk
+    ak: HPRAAK
+    rk: CombSRKey
 
 
-def comb_vrgen(pk, mk, rk):
+def comb_vrgen(pk: HPRASPublicKey, mk: CombMK, rk: CombSRKey) -> CombAK:
     """Output aggregation key."""
     ak = hpra_vrgen(pk, mk.mk)
     return CombAK(ak, rk)
 
 
-def comb_agg(aks, sigmas, weights):
+def comb_agg(
+    aks: Sequence[CombAK], sigmas: Sequence[CombSignature], weights: Sequence[BN]
+) -> tuple[HPRECiphertext, GT]:
     """Aggregate and reencrypt authenticated message vector."""
 
-    def evalcs(cs, weights):
+    def evalcs(cs: Sequence[HPRECiphertext], weights: Sequence[BN]) -> HPRECiphertext:
         # The same as hpre_eval, but with the correct types level-2-ciphertexts.
         l = len(cs[0].cs)
         return HPRECiphertext(
             cs[0].level,
             tuple(
                 math.prod(
-                    (c.c0[idx] ** weight for c, weight in zip(cs, weights)),
+                    (
+                        cast(Sequence[GT], c.c0)[idx] ** weight
+                        for c, weight in zip(cs, weights)
+                    ),
                     start=neutral_GT(),
-                )
+                )  # type: ignore
                 for idx in range(l)
             ),
             tuple(
                 math.prod(
-                    (c.cs[idx] ** weight for c, weight in zip(cs, weights)),
+                    (
+                        cast(Sequence[GT], c.cs)[idx] ** weight
+                        for c, weight in zip(cs, weights)
+                    ),
                     start=neutral_GT(),
-                )
+                )  # type: ignore
                 for idx in range(l)
             ),
         )
@@ -496,13 +506,27 @@ def comb_agg(aks, sigmas, weights):
     )
 
 
-def comb_averify(mk, cs, mu, tau, ids, weights):
+def comb_averify(
+    mk: CombMK,
+    cs: HPRECiphertext,
+    mu: GT,
+    tau: Any,
+    ids: Sequence[HPRASID],
+    weights: Sequence[BN],
+) -> Union[Sequence[GT], bool]:
     """Verify and decrypt authenticated message vector."""
 
-    def hpra_averify(mk, msg, mu, tau, ids, weights):
+    def hpra_averify(
+        mk: HPRAVMK,
+        msg: Sequence[GT],
+        mu: GT,
+        tau: Any,
+        ids: Sequence[HPRASID],
+        weights: Sequence[BN],
+    ) -> bool:
         ghat = generator_G2()
         muprime = (
-            math.prod(msg, start=neutral_GT())
+            math.prod(msg, start=neutral_GT())  # type: ignore
             * pair_product(
                 *(
                     (
@@ -524,7 +548,7 @@ def comb_averify(mk, cs, mu, tau, ids, weights):
     )
 
 
-def test_comb():
+def test_comb() -> None:
     l = 3  # length of the message vectors
     pp = comb_params(l)
     # Generate two signer keys
@@ -544,7 +568,7 @@ def test_comb():
     rk1 = comb_srgen(sk1, aux)
     ak1 = comb_vrgen(pk1, mk, rk1)
 
-    weights = (BN_from_int(1),)
+    weights: tuple[BN, ...] = (BN_from_int(1),)
     ctxt, mu = comb_agg((ak1,), (sigma1,), weights)
 
     expected_msg = tuple(

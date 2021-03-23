@@ -19,6 +19,8 @@
 # SOFTWARE.
 
 """Implementation of the BLS signatures scheme
+
+This example requires Python >= 3.7.
 """
 
 from dataclasses import dataclass
