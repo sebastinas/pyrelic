@@ -84,6 +84,9 @@ class G1:
     def __bytes__(self) -> bytes:
         return bytes(self.element)
 
+    def __repr__(self) -> bytes:
+        return f"G1({bytes(self)!r})"
+
 
 def neutral_G1() -> G1:
     return G1(_relic.neutral_G1())
@@ -164,6 +167,9 @@ class G2:
 
     def __bytes__(self) -> bytes:
         return bytes(self.element)
+
+    def __repr__(self) -> bytes:
+        return f"G2({bytes(self)!r})"
 
 
 def neutral_G2() -> G2:

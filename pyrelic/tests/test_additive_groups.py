@@ -18,12 +18,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from . import RelicTestCase
-from pyrelic import additive
 import pyrelic
 import math
 import sys
 import unittest
+from . import RelicTestCase
+from pyrelic import additive
+from pyrelic.additive import G1, G2
 
 
 class GroupTests:
@@ -32,6 +33,12 @@ class GroupTests:
         bytes_element = bytes(element)
 
         self.assertEqual(element, self.group(bytes_element))
+
+    def test_repr(self):
+        element = self.rand()
+        repr_element = repr(element)
+
+        self.assertEqual(element, eval(repr_element))
 
     def test_neutral(self):
         element = self.neutral()
@@ -96,7 +103,7 @@ class GroupTests:
 
 class TestG1(GroupTests, RelicTestCase):
     def group(self, *args):
-        return additive.G1(*args)
+        return G1(*args)
 
     def generator(self, *args):
         return additive.generator_G1(*args)
@@ -110,7 +117,7 @@ class TestG1(GroupTests, RelicTestCase):
 
 class TestG2(GroupTests, RelicTestCase):
     def group(self, *args):
-        return additive.G2(*args)
+        return G2(*args)
 
     def generator(self, *args):
         return additive.generator_G2(*args)
