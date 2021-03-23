@@ -3,4 +3,5 @@ include pyrelic/_relic.pxd
 include pyrelic/_relic.pyi
 include pyrelic/_relic.pyx
 include pyrelic/py.typed
+include pyrelic/relic.pxd
 include CHANGELOG.md
