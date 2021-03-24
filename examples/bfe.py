@@ -124,7 +124,7 @@ class Ciphertext:
     """BFE ciphertext"""
 
     u: G1
-    v: bytes
+    v: Sequence[bytes]
 
 
 def map_identity(identity: int) -> G2:
@@ -191,7 +191,7 @@ def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
 
     return k, Ciphertext(
         u,
-        b"".join(
+        tuple(
             internal_encrypt(pkr, identity, key)
             for identity in get_bit_positions(bytes(u), pk.hash_count, pk.filter_size)
         ),
@@ -214,12 +214,9 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
 
     key: Optional[bytes] = None
     bit_positions = sk.bloom_filter.get_bit_positions(bytes(ctxt.u))
-    for i, identity in enumerate(bit_positions):
+    for v, identity in zip(ctxt.v, bit_positions):
         if not sk.bloom_filter[identity]:
-            key = internal_decrypt(
-                ctxt.v[i * sk.key_size : (i + 1) * sk.key_size],
-                sk[identity],
-            )
+            key = internal_decrypt(v, sk[identity])
             break
 
     if key is None:
@@ -228,7 +225,7 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
     r, k = hash_r(key, sk.key_size)
     pkr = sk.pk ** r
 
-    recomputed_v = b"".join(
+    recomputed_v = tuple(
         internal_encrypt(pkr, identity, key) for identity in bit_positions
     )
     return k if recomputed_v == ctxt.v else None
