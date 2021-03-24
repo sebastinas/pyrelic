@@ -22,7 +22,7 @@
 
 Based on David Derler, Sebastian Ramacher, Danial Slamanig: Homomorphic Proxy
 Re-Authenticators and Applications to Verifiable Multi-User Data Aggregration.
-Financial Crytography 2017. https://eprint.iacr.org/2017/086.pdf.
+Financial Cryptography 2017. https://eprint.iacr.org/2017/086.pdf.
 
 This example requires Python >= 3.8.
 """
@@ -53,8 +53,9 @@ from pyrelic import (
 import math
 import itertools
 import enum
+import struct
 from dataclasses import dataclass, field
-from typing import Union, Sequence, Any, Optional, TypeVar, Callable, cast
+from typing import Union, Sequence, Any, Optional, TypeVar, Callable, cast, Tuple
 
 T = TypeVar("T")
 
@@ -76,7 +77,13 @@ class HPRAParams:
 def hpra_params(l: int) -> HPRAParams:
     """Generate public parameters for HPRA."""
 
-    return HPRAParams(l, tuple(rand_G1() for i in range(l)))
+    return HPRAParams(
+        l,
+        tuple(
+            hash_to_G1(b" ".join((b"public params", struct.pack("<L", i))))
+            for i in range(l)
+        ),
+    )
 
 
 @dataclass
@@ -115,7 +122,7 @@ class HPRAAK:
     ak: G2
 
 
-def hpra_sgen(pp: HPRAParams) -> tuple[HPRASID, HPRASPrivateKey, HPRASPublicKey]:
+def hpra_sgen(pp: HPRAParams) -> Tuple[HPRASID, HPRASPrivateKey, HPRASPublicKey]:
     beta = rand_BN_order()
     g2beta = generator_G2(beta)
     g2betainv = generator_G2(beta.mod_inv(pp.order))
@@ -132,7 +139,7 @@ def hpra_srgen(sk: HPRASPrivateKey, aux: None) -> None:
     return None
 
 
-def hpra_vgen(pp: HPRAParams) -> tuple[HPRAVMK, None]:
+def hpra_vgen(pp: HPRAParams) -> Tuple[HPRAVMK, None]:
     alpha = rand_BN_order()
     return HPRAVMK(alpha, pp), None
 
@@ -160,7 +167,7 @@ def hpra_agg(
     msgs: Sequence[T],
     weights: Sequence[BN],
     evalf: Callable[[Sequence[T], Sequence[BN]], T],
-) -> tuple[T, GT]:
+) -> Tuple[T, GT]:
     msg = evalf(msgs, weights)
     mu = pair_product(
         *((sigma ** weight, ak.ak) for sigma, weight, ak in zip(sigmas, weights, aks))
@@ -190,7 +197,7 @@ def hpra_averify(
     return muprime == mu
 
 
-def evalf(msgs: Sequence[Sequence[BN]], weights: Sequence[BN]) -> tuple[BN, ...]:
+def evalf(msgs: Sequence[Sequence[BN]], weights: Sequence[BN]) -> Tuple[BN, ...]:
     l = len(msgs[0])
     order = pyrelic.order()
     return tuple(
@@ -258,7 +265,7 @@ class HPREPublicKey:
         )
 
 
-def hpre_keygen(l: int) -> tuple[HPREPrivateKey, HPREPublicKey]:
+def hpre_keygen(l: int) -> Tuple[HPREPrivateKey, HPREPublicKey]:
     assert l >= 1
     a1 = tuple(rand_BN_order() for _ in range(l))
     a2 = tuple(rand_BN_order() for _ in range(l))
@@ -319,7 +326,7 @@ def hpre_rencrypt(rk: HPREReEncKey, c: HPRECiphertext) -> HPRECiphertext:
     )
 
 
-def hpre_decrypt(sk: HPREPrivateKey, c: HPRECiphertext) -> tuple[GT, ...]:
+def hpre_decrypt(sk: HPREPrivateKey, c: HPRECiphertext) -> Tuple[GT, ...]:
     order = pyrelic.order()
     if c.level == HPRECiphertextLevel.L1:
         return tuple(cs / cast(GT, c.c0) ** a1 for cs, a1 in zip(c.cs, sk.a1))
@@ -381,7 +388,7 @@ def comb_params(l: int) -> HPRAParams:
     return hpra_params(l)
 
 
-def comb_sgen(pp: HPRAParams) -> tuple[HPRASID, CombSPrivateKey, HPRASPublicKey]:
+def comb_sgen(pp: HPRAParams) -> Tuple[HPRASID, CombSPrivateKey, HPRASPublicKey]:
     """Generate "signing" key, i.e., the key of the source."""
 
     id, sk, pk = hpra_sgen(pp)
@@ -402,7 +409,7 @@ class CombAUX:
     rpk: HPREPublicKey
 
 
-def comb_vgen(pp: HPRAParams) -> tuple[CombMK, CombAUX]:
+def comb_vgen(pp: HPRAParams) -> Tuple[CombMK, CombAUX]:
     """Generate "verification" key, i.e., the key of the receiver."""
 
     mk, aux = hpra_vgen(pp)
@@ -467,7 +474,7 @@ def comb_vrgen(pk: HPRASPublicKey, mk: CombMK, rk: CombSRKey) -> CombAK:
 
 def comb_agg(
     aks: Sequence[CombAK], sigmas: Sequence[CombSignature], weights: Sequence[BN]
-) -> tuple[HPRECiphertext, GT]:
+) -> Tuple[HPRECiphertext, GT]:
     """Aggregate and reencrypt authenticated message vector."""
 
     def evalcs(cs: Sequence[HPRECiphertext], weights: Sequence[BN]) -> HPRECiphertext:
@@ -568,7 +575,7 @@ def test_comb() -> None:
     rk1 = comb_srgen(sk1, aux)
     ak1 = comb_vrgen(pk1, mk, rk1)
 
-    weights: tuple[BN, ...] = (BN_from_int(1),)
+    weights: Tuple[BN, ...] = (BN_from_int(1),)
     ctxt, mu = comb_agg((ak1,), (sigma1,), weights)
 
     expected_msg = tuple(

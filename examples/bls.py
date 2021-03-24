@@ -34,6 +34,7 @@ from pyrelic import (
     G2,
     Relic,
 )
+from typing import Tuple
 
 
 @dataclass
@@ -57,7 +58,7 @@ class Signature:
     sigma: G1
 
 
-def keygen() -> tuple[PrivateKey, PublicKey]:
+def keygen() -> Tuple[PrivateKey, PublicKey]:
     exponent = rand_BN_order()
     return PrivateKey(exponent), PublicKey(generator_G2(exponent))
 
