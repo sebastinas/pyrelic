@@ -781,13 +781,14 @@ def pair_product(*args):
         return result
 
     try:
-        g1s = <relic.g1_t*>malloc(sizeof(relic.g1_t) * length)
-        for idx in range(length):
-            relic.g1_null(g1s[idx])
+        with nogil:
+            g1s = <relic.g1_t*>malloc(sizeof(relic.g1_t) * length)
+            for idx in range(length):
+                relic.g1_null(g1s[idx])
 
-        g2s = <relic.g2_t*>malloc(sizeof(relic.g2_t) * length)
-        for idx in range(length):
-            relic.g2_null(g2s[idx])
+            g2s = <relic.g2_t*>malloc(sizeof(relic.g2_t) * length)
+            for idx in range(length):
+                relic.g2_null(g2s[idx])
 
         try:
             for idx in range(length):
@@ -800,12 +801,14 @@ def pair_product(*args):
                 relic.g2_new(g2s[idx])
                 relic.g2_copy(g2s[idx], (<G2>cur_args_1).value)
 
-            relic.pc_map_sim(result.value, g1s, g2s, length)
+            with nogil:
+                relic.pc_map_sim(result.value, g1s, g2s, length)
         finally:
-            for idx in reversed(range(length)):
-                relic.g2_free(g2s[idx])
-            for idx in reversed(range(length)):
-                relic.g1_free(g1s[idx])
+            with nogil:
+                for idx in reversed(range(length)):
+                    relic.g2_free(g2s[idx])
+                for idx in reversed(range(length)):
+                    relic.g1_free(g1s[idx])
     finally:
         free(g2s)
         free(g1s)
