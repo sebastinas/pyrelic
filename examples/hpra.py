@@ -35,7 +35,6 @@ from pyrelic import (
     G1,
     G2,
     GT,
-    Relic,
     generator_G1,
     generator_G2,
     generator_GT,
@@ -608,7 +607,6 @@ def test_comb() -> None:
 
 
 if __name__ == "__main__":
-    with Relic():
-        test_hpra()
-        test_hpre()
-        test_comb()
+    test_hpra()
+    test_hpre()
+    test_comb()

@@ -22,7 +22,6 @@ import pyrelic
 import math
 import sys
 import unittest
-from . import RelicTestCase
 from pyrelic import additive
 from pyrelic.additive import G1, G2
 
@@ -101,7 +100,7 @@ class GroupTests:
         self.assertEqual(element * 1, element)
 
 
-class TestG1(GroupTests, RelicTestCase):
+class TestG1(GroupTests, unittest.TestCase):
     def group(self, *args):
         return G1(*args)
 
@@ -115,7 +114,7 @@ class TestG1(GroupTests, RelicTestCase):
         return additive.rand_G1()
 
 
-class TestG2(GroupTests, RelicTestCase):
+class TestG2(GroupTests, unittest.TestCase):
     def group(self, *args):
         return G2(*args)
 
@@ -129,7 +128,7 @@ class TestG2(GroupTests, RelicTestCase):
         return additive.rand_G2()
 
 
-class TestPair(RelicTestCase):
+class TestPair(unittest.TestCase):
     def test_pair_generators(self):
         gt = additive.pair(additive.generator_G1(), additive.generator_G2())
         self.assertEqual(gt, additive.generator_GT())
@@ -151,7 +150,7 @@ class TestPair(RelicTestCase):
         self.assertEqual(additive.pair(g1, g2 * x), gt_base ** x)
 
 
-class TestPairingProduct(RelicTestCase):
+class TestPairingProduct(unittest.TestCase):
     def test_pair_product_0(self):
         self.assertEqual(additive.pair_product(), additive.neutral_GT())
 

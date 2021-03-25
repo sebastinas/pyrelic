@@ -22,10 +22,9 @@ import unittest
 import pyrelic
 import math
 import sys
-from . import RelicTestCase
 
 
-class TestPair(RelicTestCase):
+class TestPair(unittest.TestCase):
     def test_pair_generators(self):
         gt = pyrelic.pair(pyrelic.generator_G1(), pyrelic.generator_G2())
         self.assertEqual(gt, pyrelic.generator_GT())
@@ -47,7 +46,7 @@ class TestPair(RelicTestCase):
         self.assertEqual(pyrelic.pair(g1, g2 ** x), gt_base ** x)
 
 
-class TestPairingProduct(RelicTestCase):
+class TestPairingProduct(unittest.TestCase):
     def test_pair_product_0(self):
         self.assertEqual(pyrelic.pair_product(), pyrelic.neutral_GT())
 

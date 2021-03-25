@@ -27,7 +27,7 @@ from ._relic import GT, neutral_GT, rand_GT, generator_GT
 Helper classes with additive notations for G1 and G2
 
 Sometimes protocols are written using additive notations for the groups G1 and G2. To
-have a more convienient way to implement those protocols, G1 and G2 from this module are
+have a more convenient way to implement those protocols, G1 and G2 from this module are
 implemented as additive groups.
 """
 

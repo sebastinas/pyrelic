@@ -43,37 +43,23 @@ cdef extern from *:
 _relic_version = tuple(map(Integer, relic.RLC_VERSION.split(b".")))
 
 
-cdef class Relic:
-    """Context manager to intialize relic.
+def _relic_clean():
+    relic.core_clean()
 
-    Usage of all other functions and classes needs to happen within a `Relic`
-    context.
-    """
 
-    cdef int code_core
-    cdef int code_pairing
+def _relic_init():
+    # relic up to 0.5.0 does not perform internal refcounting
+    if _relic_version <= (0, 5, 0):
+        if relic.core_get() is not NULL:
+            return (False, True, True)
 
-    def __init__(self):
-        self.code_core = relic.RLC_ERR
-        self.code_pairing = relic.RLC_ERR
+    if relic.core_init() != relic.RLC_OK:
+        return (False, False, False)
 
-    def __enter__(self):
-        # relic up to 0.5.0 does not perform internal refcounting
-        if _relic_version <= (0, 5, 0):
-            if relic.core_get() is not NULL:
-                return self
+    if relic.pc_param_set_any() != relic.RLC_OK:
+        return (True, True, False)
 
-        self.code_core = relic.core_init()
-        if self.code_core != relic.RLC_OK:
-            raise RuntimeError("Failed to initialize relic!")
-        self.code_pairing = relic.pc_param_set_any()
-        if self.code_pairing != relic.RLC_OK:
-            raise RuntimeError("Failed to initialize relic (pairing)!")
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.code_core == relic.RLC_OK:
-            relic.core_clean()
+    return (True, True, True)
 
 
 cdef class BN:

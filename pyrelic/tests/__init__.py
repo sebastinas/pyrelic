@@ -17,14 +17,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-import contextlib
-import unittest
-import pyrelic
-
-
-class RelicTestCase(unittest.TestCase):
-    def setUp(self):
-        stack = contextlib.ExitStack()
-        self.core = stack.enter_context(pyrelic.Relic())
-        self.addCleanup(stack.close)

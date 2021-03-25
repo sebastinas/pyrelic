@@ -21,10 +21,9 @@
 import unittest
 import pyrelic
 from pyrelic import BN
-from . import RelicTestCase
 
 
-class TestBN(RelicTestCase):
+class TestBN(unittest.TestCase):
     def test_zero(self):
         zero = pyrelic.neutral_BN()
         self.assertFalse(zero)

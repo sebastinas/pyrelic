@@ -43,7 +43,6 @@ from pyrelic import (
     G1,
     G2,
     GT,
-    Relic,
 )
 from typing import Sequence, Optional, Tuple, List
 
@@ -249,5 +248,4 @@ def test_bfe() -> None:
 
 
 if __name__ == "__main__":
-    with Relic():
-        test_bfe()
+    test_bfe()

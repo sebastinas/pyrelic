@@ -21,7 +21,6 @@
 import unittest
 import pyrelic
 from pyrelic import G1, G2, GT
-from . import RelicTestCase
 
 
 class GroupTests:
@@ -95,7 +94,7 @@ class GroupTests:
         self.assertEqual(element ** 1, element)
 
 
-class TestG1(GroupTests, RelicTestCase):
+class TestG1(GroupTests, unittest.TestCase):
     def group(self, *args):
         return G1(*args)
 
@@ -109,7 +108,7 @@ class TestG1(GroupTests, RelicTestCase):
         return pyrelic.rand_G1()
 
 
-class TestG2(GroupTests, RelicTestCase):
+class TestG2(GroupTests, unittest.TestCase):
     def group(self, *args):
         return G2(*args)
 
@@ -123,7 +122,7 @@ class TestG2(GroupTests, RelicTestCase):
         return pyrelic.rand_G2()
 
 
-class TestGT(GroupTests, RelicTestCase):
+class TestGT(GroupTests, unittest.TestCase):
     def group(self, *args):
         return GT(*args)
 

@@ -19,7 +19,6 @@
 # SOFTWARE.
 
 from ._relic import (
-    Relic,
     # BN
     BN,
     BN_from_int,
@@ -55,3 +54,37 @@ __version__ = "0.1.1"
 __author__ = "Sebastian Ramacher"
 __license__ = "MIT"
 __copyright__ = f"(C) 2021 {__author__}"
+
+
+def _init() -> None:
+    """Initialize relic."""
+
+    from . import _relic
+    import atexit
+
+    needs_cleanup, core_success, pair_success = _relic._relic_init()
+    if needs_cleanup:
+        atexit.register(_relic._relic_clean)
+
+    if not core_success:
+        raise RuntimeError("Failed to initialize relic (core)!")
+    if not pair_success:
+        raise RuntimeError("Failed to initilaize relic (pairing)!")
+
+
+class Relic:
+    def __init__(self) -> None:
+        import warnings
+
+        warnings.warn(
+            "Using Relic is deprecated and is no longer needed.", DeprecationWarning
+        )
+
+    def __enter__(self) -> "Relic":
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        pass
+
+
+_init()

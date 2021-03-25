@@ -34,7 +34,6 @@ from pyrelic import (
     G1,
     G2,
     GT,
-    Relic,
     rand_BN_order,
     generator_G1,
     generator_G2,
@@ -173,5 +172,4 @@ def test_bf_ibe() -> None:
 
 
 if __name__ == "__main__":
-    with Relic():
-        test_bf_ibe()
+    test_bf_ibe()

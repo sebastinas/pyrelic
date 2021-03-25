@@ -32,7 +32,6 @@ from pyrelic import (
     BN,
     G1,
     G2,
-    Relic,
 )
 from typing import Tuple
 
@@ -79,5 +78,4 @@ def test_bls() -> None:
 
 
 if __name__ == "__main__":
-    with Relic():
-        test_bls()
+    test_bls()
