@@ -13,7 +13,8 @@ personal needs and they do not cover the full `relic` API.
 
 ## Quick installation guide
 
-If you are running Ubuntu 20.04, the easiest way to install `pyrelic` is via my PPA:
+If you are running Ubuntu 20.04, the easiest way to install `pyrelic` is via my
+[PPA](https://launchpad.net/~s-ramacher/+archive/ubuntu/ait):
 ```sh
 sudo add-apt-repository -u ppa:s-ramacher/ait
 sudo apt install python3-pyrelic
@@ -34,10 +35,14 @@ Note though that these two approaches require a pairing-enabled build of `relic`
 
 `pyrelic` includes some examples that demonstrate the use of the module and also showcases some
 pairing-based schemes:
-* `examples/bls.py`: Implements the Boneh-Lynn-Shacham signature scheme.
-* `examples/bfibe.py`: Implements the Boneh-Franklin identity-based encryption scheme (BasicIdent).
-* `examples/hpra.py`: Implements homomorphic proxy re-authenticators for linear functions.
-* `examples/bfe.py`: Imeplemnts Bloom Filter KEM based on the BF IBE.
+* `examples/bls.py`: Implements the [Boneh-Lynn-Shacham signature
+  scheme](https://doi.org/10.1007%2Fs00145-004-0314-9).
+* `examples/bfibe.py`: Implements the [Boneh-Franklin identity-based encryption
+  scheme](https://doi.org/10.1007/3-540-44647-8_13) (BasicIdent).
+* `examples/hpra.py`: Implements [homomorphic proxy
+  re-authenticators](https://doi.org/10.1007/978-3-319-70972-7_7) for linear functions.
+* `examples/bfe.py`: Imeplemnts [Bloom Filter KEM](https://doi.org/10.1007/978-3-319-78372-7_14)
+  based on the BF IBE.
 
 ## License
 
