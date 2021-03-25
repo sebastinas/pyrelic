@@ -53,7 +53,7 @@ class MasterSecretKey:
 
 @dataclass
 class PublicKey:
-    """BF public ke aka the public parameters."""
+    """BF public key aka the public parameters."""
 
     pk: G2
 
@@ -74,7 +74,7 @@ class Ciphertext:
 
 
 def map_identity(identity: bytes) -> G1:
-    """Computes H_1(identity)."""
+    """Computes H_1(identity) which maps an identity into G_1."""
 
     return hash_to_G1(identity)
 
@@ -83,29 +83,50 @@ def hash_and_xor(y: GT, message: bytes) -> bytes:
     """Computes H_2(y) ⊕ message."""
     message_len = len(message)
 
+    # We use SHAKE-256 to easily derive a key stream that exactly matches the length
+    # of the message.
     hash_context = hashlib.shake_256()
+    # Hash "H_2" for domain seperation
     hash_context.update(b"H_2")
     hash_context.update(bytes(y))
+    # Also hash the message length
     hash_context.update(struct.pack("<Q", message_len))
 
+    # XOR message with the digest
     return bytes(d ^ m for d, m in zip(hash_context.digest(message_len), message))
 
 
 def keygen() -> tuple[MasterSecretKey, PublicKey]:
-    """Generate a new key pair."""
+    """Generate a new key pair.
+
+    The master secret key consists of an exponent α whereas the corresponding public
+    key is α mapped into G_2, i.e., g_2^α.
+    """
 
     exponent = rand_BN_order()
     return MasterSecretKey(exponent), PublicKey(generator_G2(exponent))
 
 
 def extract_key(msk: MasterSecretKey, identity: bytes) -> SecretKey:
-    """Extract secret key for an identity."""
+    """Extract secret key for an identity.
+
+    Key extraction is done by first mapping the identity into G_1 using H_1 and then
+    raising this group element to the secret exponent α, i.e, H_1(identity)^α.
+    """
 
     return SecretKey(map_identity(identity) ** msk.exponent)
 
 
 def encrypt(pk: PublicKey, identity: bytes, message: bytes) -> Ciphertext:
-    """Encrypt a message with respect to some identity."""
+    """Encrypt a message with respect to some identity.
+
+    Encryption works in multiple steps:
+        * Sample a random exponent r and store u = g_1^r in the ciphertext.
+        * Map the identity into G_1, i.e., q_id = H_1(identity).
+        * Pair q_id and the public key to obtain g_id = e(q_id, pk).
+        * Raise g_id to the r and use that element to derive the key stream to mask the
+          message, i.e., v = H_2(g_id^r).
+    """
 
     q_id = map_identity(identity)
     r = rand_BN_order()
@@ -117,7 +138,12 @@ def encrypt(pk: PublicKey, identity: bytes, message: bytes) -> Ciphertext:
 
 
 def decrypt(sk: SecretKey, ciphertext: Ciphertext) -> bytes:
-    """Decrypt a ciphertext with an extracted key."""
+    """Decrypt a ciphertext with an extracted key.
+
+    Decryption recomputes g_id^r by pairing the extracted secret key with u, i.e,
+    g_id^r = e(sk, u)= e(H(identity)^α, g_2^r) = e(H(identity), pk)^r. Then, H_2 is
+    used to unmask the message.
+    """
 
     g_id_r = pair(sk.sk, ciphertext.u)
     return hash_and_xor(g_id_r, ciphertext.v)
