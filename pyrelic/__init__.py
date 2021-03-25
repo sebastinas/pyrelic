@@ -50,7 +50,7 @@ from ._relic import (
     pair_product,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.2"
 __author__ = "Sebastian Ramacher"
 __license__ = "MIT"
 __copyright__ = f"(C) 2021 {__author__}"
