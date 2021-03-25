@@ -13,7 +13,14 @@ API.
 
 ## Quick installation guide
 
-`python-relic` can be installed via `pip`:
+If you are running Ubuntu 20.04, the easiest way to install `python-relic` is via my PPA:
+```sh
+sudo add-apt-repository -u ppa:s-ramacher/ait
+sudo apt install python3-pyrelic
+```
+It comes with a prebuilt version of `relic` configured for the pairing-friendly BLS12-381 curve.
+
+Otherwise, python-relic` can be installed via `pip`:
 ```sh
 pip install python-relic
 ```
@@ -21,6 +28,7 @@ or by running:
 ```sh
 python3 setup.py install
 ```
+Note though that these two approaches require a pairing-enabled build of `relic` to be available.
 
 ## License
 
