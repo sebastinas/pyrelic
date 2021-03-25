@@ -1,9 +1,28 @@
 #!/usr/bin/python3
 
-import pkgconfig
+import collections
 from setuptools import setup, Extension
 
-flags = pkgconfig.parse("relic")
+
+have_pkgconfig = True
+try:
+    import pkgconfig
+
+    def pkgconfig_exists(package):
+        try:
+            return pkgconfig.exists(package)
+        except OSError:
+            return False
+except ImportError:
+    have_pkgconfig = False
+
+
+if have_pkgconfig and pkgconfig_exists("relic"):
+    flags = pkgconfig.parse("relic")
+else:
+    flags = collections.defaultdict(list)
+    flags["libraries"] = ["relic"]
+
 
 ext_modules = [
     Extension(

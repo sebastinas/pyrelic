@@ -9,7 +9,7 @@ API.
 * `Cython >= 0.28` (optional, only for building). If Cython is not available, the C files are not
   regenerated from their source.
 * `relic >= 0.5.0`
-* `pkgconfig` (only for building)
+* `pkgconfig` (optional, only for building)
 
 ## Quick installation guide
 
