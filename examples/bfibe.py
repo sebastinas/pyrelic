@@ -48,7 +48,7 @@ from typing import Tuple
 class MasterSecretKey:
     """BF master secret key."""
 
-    exponent: BN
+    alpha: BN
 
 
 @dataclass
@@ -103,8 +103,8 @@ def keygen() -> tuple[MasterSecretKey, PublicKey]:
     key is α mapped into G_2, i.e., g_2^α.
     """
 
-    exponent = rand_BN_order()
-    return MasterSecretKey(exponent), PublicKey(generator_G2(exponent))
+    alpha = rand_BN_order()
+    return MasterSecretKey(alpha), PublicKey(generator_G2(alpha))
 
 
 def extract_key(msk: MasterSecretKey, identity: bytes) -> SecretKey:
@@ -114,7 +114,7 @@ def extract_key(msk: MasterSecretKey, identity: bytes) -> SecretKey:
     raising this group element to the secret exponent α, i.e, H_1(identity)^α.
     """
 
-    return SecretKey(map_identity(identity) ** msk.exponent)
+    return SecretKey(map_identity(identity) ** msk.alpha)
 
 
 def encrypt(pk: PublicKey, identity: bytes, message: bytes) -> Ciphertext:
