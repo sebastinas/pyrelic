@@ -128,12 +128,15 @@ def encrypt(pk: PublicKey, identity: bytes, message: bytes) -> Ciphertext:
           message, i.e., v = H_2(g_id^r).
     """
 
-    q_id = map_identity(identity)
     r = rand_BN_order()
-    g_id_r = pair(q_id ** r, pk.pk)
-
     u = generator_G2(r)
+
+    q_id = map_identity(identity)
+    # Instead of computing g_id^r, we raise q_id to the r before pairing it which is
+    # more efficient.
+    g_id_r = pair(q_id ** r, pk.pk)
     v = hash_and_xor(g_id_r, message)
+
     return Ciphertext(u, v)
 
 

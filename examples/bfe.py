@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Implementation of Bloom Filter Encryption
+"""Implementation of Bloom Filter KEM
 
 Based on David Derler, Tibor Jager, Daniel Slamanig, Christoph Striecks:
 Bloom Filter Encryption and Applications to Efficient Forward-Secret 0-RTT Key Exchange.
@@ -37,9 +37,8 @@ from dataclasses import dataclass
 from pyrelic import (
     rand_BN_order,
     pair,
-    generator_G1,
     generator_G2,
-    hash_to_G2,
+    hash_to_G1,
     BN,
     G1,
     G2,
@@ -97,11 +96,11 @@ class PrivateKey:
     """BFE private key"""
 
     bloom_filter: BloomFilter
-    secret_keys: List[Optional[G2]]
+    secret_keys: List[Optional[G1]]
     key_size: int
-    pk: G1
+    pk: G2
 
-    def __getitem__(self, key: int) -> G2:
+    def __getitem__(self, key: int) -> G1:
         value = self.secret_keys[key]
         if value is None:
             raise IndexError
@@ -116,19 +115,19 @@ class PublicKey:
     hash_count: int
     filter_size: int
     key_size: int
-    pk: G1
+    pk: G2
 
 
 @dataclass
 class Ciphertext:
     """BFE ciphertext"""
 
-    u: G1
+    u: G2
     v: Sequence[bytes]
 
 
-def map_identity(identity: int) -> G2:
-    return hash_to_G2(struct.pack("<Q", identity))
+def map_identity(identity: int) -> G1:
+    return hash_to_G1(struct.pack("<Q", identity))
 
 
 def hash_r(key: bytes, key_size: int) -> Tuple[BN, bytes]:
@@ -158,11 +157,11 @@ def keygen(
     """Generate a new key pair."""
 
     exponent = rand_BN_order()
-    pk = generator_G1(exponent)
+    pk = generator_G2(exponent)
 
     bloom_filter = BloomFilter(filter_size, false_positive_probability)
 
-    def extract(identity: int) -> G2:
+    def extract(identity: int) -> G1:
         return map_identity(identity) ** exponent
 
     return (
@@ -176,8 +175,8 @@ def keygen(
     )
 
 
-def internal_encrypt(pkr: G1, identity: int, message: bytes) -> bytes:
-    return hash_and_xor(pair(pkr, map_identity(identity)), message)
+def internal_encrypt(pkr: G2, identity: int, message: bytes) -> bytes:
+    return hash_and_xor(pair(map_identity(identity), pkr), message)
 
 
 def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
@@ -186,7 +185,7 @@ def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
     key = os.urandom(pk.key_size)
     r, k = hash_r(key, pk.key_size)
 
-    u = generator_G1(r)
+    u = generator_G2(r)
     pkr = pk.pk ** r
 
     return k, Ciphertext(
@@ -209,8 +208,8 @@ def puncture(sk: PrivateKey, ctxt: Ciphertext) -> None:
 def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
     """Decapsulate a key."""
 
-    def internal_decrypt(v: bytes, sk: G2) -> bytes:
-        return hash_and_xor(pair(ctxt.u, sk), v)
+    def internal_decrypt(v: bytes, sk: G1) -> bytes:
+        return hash_and_xor(pair(sk, ctxt.u), v)
 
     key: Optional[bytes] = None
     bit_positions = sk.bloom_filter.get_bit_positions(bytes(ctxt.u))
