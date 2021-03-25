@@ -92,7 +92,7 @@ def neutral_G1() -> G1:
     return G1(_relic.neutral_G1())
 
 
-def generator_G1(factor: Optional[BN] = None):
+def generator_G1(factor: Optional[BN] = None) -> G1:
     return G1(_relic.generator_G1(factor))
 
 
@@ -176,7 +176,7 @@ def neutral_G2() -> G2:
     return G2(_relic.neutral_G2())
 
 
-def generator_G2(factor: Optional[BN] = None):
+def generator_G2(factor: Optional[BN] = None) -> G2:
     return G2(_relic.generator_G2(factor))
 
 
