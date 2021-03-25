@@ -6,10 +6,12 @@ personal needs and they do not cover the full `relic` API.
 
 ## Dependencies
 
+`pyrelic` requires the following dependencies to successfully build and install:
+* `relic >= 0.5.0` with pairing support enabled.
 * `Cython >= 0.28` (optional, only for building). If Cython is not available, the C files are not
   regenerated from their source.
-* `relic >= 0.5.0`
-* `pkgconfig` (optional, only for building)
+* `pkgconfig` (optional, only for building). If `pkgconfig` is not available, the build system
+  assumes that `relic` can be linked as `-lrelic`.
 
 ## Quick installation guide
 
@@ -21,7 +23,7 @@ sudo apt install python3-pyrelic
 ```
 It comes with a prebuilt version of `relic` configured for the pairing-friendly BLS12-381 curve.
 
-Otherwise, pyrelic` can be installed via `pip`:
+Otherwise, `pyrelic` can be installed via `pip`:
 ```sh
 pip install python-relic
 ```
