@@ -13,6 +13,8 @@ try:
             return pkgconfig.exists(package)
         except OSError:
             return False
+
+
 except ImportError:
     have_pkgconfig = False
 
