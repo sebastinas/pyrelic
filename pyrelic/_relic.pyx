@@ -470,8 +470,9 @@ cpdef G1 mul_sim_G1(values, scalars, G1 base=None):
         rhs = <G1>values[idx + 1]
         rhs_scalar = <BN>scalars[idx + 1]
 
-        relic.g1_mul_sim(tmp1.value, lhs.value, lhs_scalar.value, rhs.value, rhs_scalar.value)
-        relic.g1_add(result.value, result.value, tmp1.value)
+        with nogil:
+            relic.g1_mul_sim(tmp1.value, lhs.value, lhs_scalar.value, rhs.value, rhs_scalar.value)
+            relic.g1_add(result.value, result.value, tmp1.value)
 
     if length & 1:
         idx = length - 1
@@ -480,8 +481,10 @@ cpdef G1 mul_sim_G1(values, scalars, G1 base=None):
 
         lhs = <G1>values[idx]
         lhs_scalar = <BN>scalars[idx]
-        relic.g1_mul(tmp1.value, lhs.value, lhs_scalar.value)
-        relic.g1_add(result.value, result.value, tmp1.value)
+
+        with nogil:
+            relic.g1_mul(tmp1.value, lhs.value, lhs_scalar.value)
+            relic.g1_add(result.value, result.value, tmp1.value)
     return result
 
 
@@ -627,8 +630,9 @@ cpdef G2 mul_sim_G2(values, scalars, G2 base=None):
         rhs = <G2>values[idx + 1]
         rhs_scalar = <BN>scalars[idx + 1]
 
-        relic.g2_mul_sim(tmp1.value, lhs.value, lhs_scalar.value, rhs.value, rhs_scalar.value)
-        relic.g2_add(result.value, result.value, tmp1.value)
+        with nogil:
+            relic.g2_mul_sim(tmp1.value, lhs.value, lhs_scalar.value, rhs.value, rhs_scalar.value)
+            relic.g2_add(result.value, result.value, tmp1.value)
 
     if length & 1:
         idx = length - 1
@@ -637,8 +641,10 @@ cpdef G2 mul_sim_G2(values, scalars, G2 base=None):
 
         lhs = <G2>values[idx]
         lhs_scalar = <BN>scalars[idx]
-        relic.g2_mul(tmp1.value, lhs.value, lhs_scalar.value)
-        relic.g2_add(result.value, result.value, tmp1.value)
+
+        with nogil:
+            relic.g2_mul(tmp1.value, lhs.value, lhs_scalar.value)
+            relic.g2_add(result.value, result.value, tmp1.value)
     return result
 
 
@@ -740,7 +746,8 @@ cpdef GT pair(G1 g1, G2 g2):
     """Computes the pairing of g1 and g2."""
 
     cdef GT result = GT()
-    relic.pc_map(result.value, g1.value, g2.value)
+    with nogil:
+        relic.pc_map(result.value, g1.value, g2.value)
     return result
 
 
@@ -763,7 +770,8 @@ def pair_product(*args):
         if not isinstance(cur_args_0, G1) or not isinstance(cur_args_1, G2):
             raise TypeError("Expected a tuple of (G1, G2) at index 0.")
 
-        relic.pc_map(result.value, (<G1>cur_args_0).value, (<G2>cur_args_1).value)
+        with nogil:
+            relic.pc_map(result.value, (<G1>cur_args_0).value, (<G2>cur_args_1).value)
         return result
 
     try:
