@@ -18,8 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Optional, Type, Union, Any, Sequence, Tuple
-from types import TracebackType
+from typing import Optional, Union, Any, Sequence, Tuple
 
 def _relic_init() -> Tuple[bool, bool, bool]: ...
 def _relic_clean() -> None: ...
