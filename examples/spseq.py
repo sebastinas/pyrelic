@@ -128,14 +128,21 @@ def change_representation(
 
 
 def test_spseq(l: int):
+    # generate a new key pair
     sk, pk = keygen(l)
 
+    # generate a random message vector
     message = MessageVector([rand_G1() for _ in range(l)])
+    # sign and ...
     sigma = sign(sk, message)
+    # verify it
     assert verify(pk, message, sigma)
 
+    # change the representation
     new_message, new_sigma = change_representation(pk, message, sigma, rand_BN_order())
+    # new signature verifies with the new representation of the message vector
     assert verify(pk, new_message, new_sigma)
+    # other combinations fails
     assert not verify(pk, new_message, sigma)
     assert not verify(pk, message, new_sigma)
 
