@@ -708,6 +708,9 @@ cdef class GT:
             return NotImplemented
         return relic.gt_cmp(self.value, (<GT>other).value) != 0
 
+    def is_neutral(self):
+        return bool(relic.gt_is_unity(self.value))
+
     def __bytes__(self):
         cdef int size = relic.gt_size_bin(self.value, 0)
         buf = bytearray(size)
