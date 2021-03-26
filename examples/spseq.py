@@ -42,28 +42,28 @@ from pyrelic import (
     rand_BN_order,
     rand_G1,
 )
-from typing import Tuple, Sequence, Optional
+from typing import Tuple, Sequence
 
 
 @dataclass
 class PublicKey:
     """SPS-EQ public key."""
 
-    x: Tuple[G2]
+    x: Tuple[G2, ...]
 
 
 @dataclass
 class PrivateKey:
     """SPS-EQ private key."""
 
-    x: Tuple[BN]
+    x: Tuple[BN, ...]
 
 
 @dataclass
 class MessageVector:
     """SPS-EQ message vector."""
 
-    m: Tuple[G1]
+    m: Tuple[G1, ...]
 
 
 @dataclass
@@ -115,11 +115,11 @@ def verify(pk: PublicKey, message: MessageVector, sigma: Signature) -> bool:
 
 def change_representation(
     pk: PublicKey, message: MessageVector, sigma: Signature, mu: BN
-) -> Optional[Tuple[MessageVector, Signature]]:
+) -> Tuple[MessageVector, Signature]:
     """Change representation of a message vector and its signature."""
 
     if not verify(pk, message, sigma):
-        return None
+        raise ValueError("Signature does not verify.")
 
     group_order = order()
     psi = rand_BN_order()
@@ -134,7 +134,7 @@ def test_spseq(l: int):
     sk, pk = keygen(l)
 
     # generate a random message vector
-    message = MessageVector([rand_G1() for _ in range(l)])
+    message = MessageVector(tuple(rand_G1() for _ in range(l)))
     # sign and ...
     sigma = sign(sk, message)
     # verify it
