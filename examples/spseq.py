@@ -32,7 +32,6 @@ import struct
 from dataclasses import dataclass
 from pyrelic import (
     BN,
-    BN_from_int,
     G1,
     G2,
     generator_G1,
@@ -103,9 +102,12 @@ def verify(pk: PublicKey, message: MessageVector, sigma: Signature) -> bool:
     if len(message.m) != len(pk.x):
         return False
 
-    first = pair_product((sigma.z ** -1, sigma.yhat), *zip(message.m, pk.x))
+    # Instead of checking whether two pairings e(x1, y1) and e(x2, y2) are equal, we check
+    # if e(x1, y2) / e(x2, y2) equals one instead. This allows us to make use of the faster
+    # pair_product and a more efficient check.
+    first = pair_product((sigma.z.invert(), sigma.yhat), *zip(message.m, pk.x))
     second = pair_product(
-        (sigma.y, generator_G2()), (generator_G1(BN_from_int(-1)), sigma.yhat)
+        (sigma.y, generator_G2()), (generator_G1().invert(), sigma.yhat)
     )
 
     return first.is_neutral() and second.is_neutral()
