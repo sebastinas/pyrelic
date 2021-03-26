@@ -129,7 +129,7 @@ def change_representation(
     )
 
 
-def test_spseq(l: int):
+def test_spseq(l: int) -> None:
     # generate a new key pair
     sk, pk = keygen(l)
 
