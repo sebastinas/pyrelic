@@ -46,6 +46,9 @@ class GroupTests:
         self.assertEqual(element * exp, element)
         self.assertEqual(exp * element, element)
 
+    def test_is_neutral(self):
+        self.assertTrue(self.neutral().is_neutral())
+
     def test_generator(self):
         exp = additive.rand_BN_order()
 

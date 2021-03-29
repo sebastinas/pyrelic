@@ -42,6 +42,9 @@ class GroupTests:
 
         self.assertEqual(element ** exp, element)
 
+    def test_is_neutral(self):
+        self.assertTrue(self.neutral().is_neutral())
+
     def test_generator(self):
         exp = pyrelic.rand_BN_order()
 

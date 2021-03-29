@@ -381,6 +381,9 @@ cdef class G1:
             return NotImplemented
         return relic.g1_cmp(self.value, (<G1>other).value) != 0
 
+    def is_neutral(self):
+        return bool(relic.g1_is_infty(self.value))
+
     def __bytes__(self):
         cdef int size = relic.g1_size_bin(self.value, 0)
         buf = bytearray(size)
@@ -546,8 +549,8 @@ cdef class G2:
             return NotImplemented
         return relic.g2_cmp(self.value, (<G2>other).value) != 0
 
-    def __nonzero__(self):
-        return not relic.g2_is_infty(self.value)
+    def is_neutral(self):
+        return bool(relic.g2_is_infty(self.value))
 
     def normalize(self):
         relic.g2_norm(self.value, self.value)

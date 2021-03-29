@@ -78,6 +78,12 @@ class G1:
             return NotImplemented
         return self.element != other.element
 
+    def is_neutral(self) -> bool:
+        return self.element.is_neutral()
+
+    def __nonzero__(self) -> bool:
+        return not self.element.is_neutral()
+
     def __hash__(self) -> int:
         return hash(self.element)
 
@@ -161,6 +167,12 @@ class G2:
         if not isinstance(other, G2):
             return NotImplemented
         return self.element != other.element
+
+    def is_neutral(self) -> bool:
+        return self.element.is_neutral()
+
+    def __nonzero__(self) -> bool:
+        return not self.element.is_neutral()
 
     def __hash__(self) -> int:
         return hash(self.element)
