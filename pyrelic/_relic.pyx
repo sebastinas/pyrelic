@@ -67,9 +67,9 @@ cdef class BN:
 
     def __cinit__(self):
         relic.bn_null(self.value)
+        relic.bn_new(self.value)
 
     def __init__(self, bytes buf=None):
-        relic.bn_new(self.value)
         if buf is not None:
             relic.bn_read_bin(self.value, buf, len(buf))
 
@@ -328,9 +328,9 @@ cdef class G1:
 
     def __cinit__(self):
         relic.g1_null(self.value)
+        relic.g1_new(self.value)
 
     def __init__(self, bytes buf=None):
-        relic.g1_new(self.value)
         if buf is not None:
             relic.g1_read_bin(self.value, buf, len(buf))
 
@@ -496,9 +496,9 @@ cdef class G2:
 
     def __cinit__(self):
         relic.g2_null(self.value)
+        relic.g2_new(self.value)
 
     def __init__(self, bytes buf=None):
-        relic.g2_new(self.value)
         if buf is not None:
             relic.g2_read_bin(self.value, buf, len(buf))
 
@@ -656,9 +656,9 @@ cdef class GT:
 
     def __cinit__(self):
         relic.gt_null(self.value)
+        relic.gt_new(self.value)
 
     def __init__(self, bytes buf=None):
-        relic.gt_new(self.value)
         if buf is not None:
             relic.gt_read_bin(self.value, buf, len(buf))
 
