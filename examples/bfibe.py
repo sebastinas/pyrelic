@@ -95,7 +95,7 @@ def hash_and_xor(y: GT, message: bytes) -> bytes:
     return bytes(d ^ m for d, m in zip(hash_context.digest(message_len), message))
 
 
-def keygen() -> tuple[MasterSecretKey, PublicKey]:
+def keygen() -> Tuple[MasterSecretKey, PublicKey]:
     """Generate a new key pair.
 
     The master secret key consists of an exponent α whereas the corresponding public
