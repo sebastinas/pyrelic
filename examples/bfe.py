@@ -249,18 +249,19 @@ def test_bfe() -> None:
     # Generate a key pair (this will take forever)
     sk, pk = keygen(32, 2 ** 19, 0.0009765625)
 
-    # Encapsulate a new key
-    k, ctxt = encaps(pk)
-    # Decapsulate the key
-    received_k = decaps(sk, ctxt)
-    assert received_k is not None
-    assert k == received_k
+    for _ in range(32):
+        # Encapsulate a new key
+        k, ctxt = encaps(pk)
+        # Decapsulate the key
+        received_k = decaps(sk, ctxt)
+        assert received_k is not None
+        assert k == received_k
 
-    # Puncture the ciphertext
-    puncture(sk, ctxt)
-    # Decapsulation now fails
-    received_k = decaps(sk, ctxt)
-    assert received_k is None
+        # Puncture the ciphertext
+        puncture(sk, ctxt)
+        # Decapsulation now fails
+        received_k = decaps(sk, ctxt)
+        assert received_k is None
 
 
 if __name__ == "__main__":
