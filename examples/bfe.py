@@ -47,21 +47,8 @@ from pyrelic import (
 from typing import Sequence, Optional, Tuple, List
 
 
-def get_position(hash_idx: int, data: bytes, filter_size: int) -> int:
-    hash_context = hashlib.shake_256()
-    hash_context.update(b"BFE_HASH")
-    hash_context.update(struct.pack("<Q", hash_idx))
-    hash_context.update(data)
-    pos = struct.unpack("<Q", hash_context.digest(8))[0]
-    return pos % filter_size
-
-
-def get_bit_positions(data: bytes, hash_count: int, filter_size: int) -> Tuple[int, ...]:
-    return tuple(get_position(hash_idx, data, filter_size) for hash_idx in range(hash_count))
-
-
 class BloomFilter:
-    """Bloom filter."""
+    """Bloom filter only with some helper functions."""
 
     def __init__(self, filter_size: int, false_positive_probability: float) -> None:
         """Instantiate given the expected size (filter_size, n) and the desired false
@@ -73,25 +60,22 @@ class BloomFilter:
         )
         # hash count: k = m / n * ln(2)
         self.hash_count = math.ceil(self.bitset_size / filter_size * math.log(2))
-        self.bits = bytearray(math.ceil(self.bitset_size / 8))
+
+    def _hash_to_position(self, hash_idx: int, data: bytes) -> int:
+        hash_context = hashlib.shake_256()
+        hash_context.update(b"BFE_HASH")
+        hash_context.update(struct.pack("<Q", hash_idx))
+        hash_context.update(data)
+        pos = struct.unpack("<Q", hash_context.digest(8))[0]
+        return pos % self.bitset_size
 
     def get_bit_positions(self, data: bytes) -> Tuple[int, ...]:
-        return get_bit_positions(data, self.hash_count, self.bitset_size)
+        """Return all indices for the element."""
 
-    def __getitem__(self, key: int) -> bool:
-        if key < 0 or key >= self.bitset_size:
-            raise IndexError
-
-        return self.bits[key // 8] << (key & 7) != 0
-
-    def __setitem__(self, key: int, value: bool) -> None:
-        if key < 0 or key >= self.bitset_size:
-            raise IndexError
-
-        if value:
-            self.bits[key // 8] |= 1 << (key & 7)
-        else:
-            self.bits[key // 8] &= ~(1 << (key & 7))
+        return tuple(
+            self._hash_to_position(hash_idx, data)
+            for hash_idx in range(self.hash_count)
+        )
 
 
 @dataclass
@@ -103,20 +87,38 @@ class PrivateKey:
     key_size: int
     pk: G2
 
-    def __getitem__(self, key: int) -> G1:
-        value = self.secret_keys[key]
-        if value is None:
+    def __contains__(self, identity: int) -> bool:
+        """Return True if key for the given identity is available."""
+
+        return (
+            identity >= 0
+            and identity < self.bloom_filter.bitset_size
+            and self.secret_keys[identity] is not None
+        )
+
+    def __getitem__(self, identity: int) -> G1:
+        """Return key associated to an identity."""
+
+        key = self.secret_keys[identity]
+        if key is None:
             raise IndexError
 
-        return value
+        return key
+
+    def __delitem__(self, identity: int) -> None:
+        """Remove key associated to an identity."""
+
+        key = self.secret_keys[identity]
+        if key is not None:
+            self.secret_keys[identity] = None
+            del key
 
 
 @dataclass
 class PublicKey:
     """BFE public key"""
 
-    hash_count: int
-    bitset_size: int
+    bloom_filter: BloomFilter
     key_size: int
     pk: G2
 
@@ -178,7 +180,7 @@ def keygen(
             key_size,
             pk,
         ),
-        PublicKey(bloom_filter.hash_count, bloom_filter.bitset_size, key_size, pk),
+        PublicKey(bloom_filter, key_size, pk),
     )
 
 
@@ -202,7 +204,7 @@ def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
         u,
         tuple(
             internal_encrypt(pkr, identity, key)
-            for identity in get_bit_positions(bytes(u), pk.hash_count, pk.bitset_size)
+            for identity in pk.bloom_filter.get_bit_positions(bytes(u))
         ),
     )
 
@@ -211,12 +213,13 @@ def puncture(sk: PrivateKey, ctxt: Ciphertext) -> None:
     """Puncture secret key on a ciphertext."""
 
     for identity in sk.bloom_filter.get_bit_positions(bytes(ctxt.u)):
-        sk.bloom_filter[identity] = True  # set bit in Bloom filter
-        sk.secret_keys[identity] = None  # remove associated key
+        del sk[identity]  # remove associated key
 
 
 def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
     """Decapsulate a key."""
+
+    assert len(ctxt.v) == sk.bloom_filter.hash_count
 
     def internal_decrypt(sk: G1, v: bytes) -> bytes:
         return hash_and_xor(pair(sk, ctxt.u), v)
@@ -226,7 +229,7 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
     bit_positions = sk.bloom_filter.get_bit_positions(bytes(ctxt.u))
     for v, identity in zip(ctxt.v, bit_positions):
         # check if key is available for the identity
-        if not sk.bloom_filter[identity]:
+        if identity in sk:
             key = internal_decrypt(sk[identity], v)
             break
     else:
