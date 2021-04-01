@@ -130,6 +130,8 @@ def map_identity(identity: int) -> G1:
 
 
 def hash_r(key: bytes, key_size: int) -> Tuple[BN, bytes]:
+    """Hash some initial random key and output r and k."""
+
     hash_context = hashlib.shake_256()
     hash_context.update(b"BFE_BF_H_R")
     hash_context.update(key)
@@ -140,8 +142,9 @@ def hash_r(key: bytes, key_size: int) -> Tuple[BN, bytes]:
 
 
 def hash_and_xor(y: GT, message: bytes) -> bytes:
-    message_len = len(message)
+    """Hash y and produce and mask message with the derived bit stream."""
 
+    message_len = len(message)
     hash_context = hashlib.shake_256()
     hash_context.update(b"BFE_BF_G")
     hash_context.update(bytes(y))
