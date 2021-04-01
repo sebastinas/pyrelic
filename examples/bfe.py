@@ -56,23 +56,27 @@ def get_position(hash_idx: int, data: bytes, filter_size: int) -> int:
     return pos % filter_size
 
 
-def get_bit_positions(data: bytes, hash_count: int, filter_size: int) -> List[int]:
-    return [get_position(hash_idx, data, filter_size) for hash_idx in range(hash_count)]
+def get_bit_positions(data: bytes, hash_count: int, filter_size: int) -> Tuple[int, ...]:
+    return tuple(get_position(hash_idx, data, filter_size) for hash_idx in range(hash_count))
 
 
 class BloomFilter:
-    """A very inefficient bloom filter."""
+    """Bloom filter."""
 
     def __init__(self, filter_size: int, false_positive_probability: float) -> None:
+        """Instantiate given the expected size (filter_size, n) and the desired false
+        positive probability."""
+
+        # size of bit array: m = -(n * log(p)) / log(2) ** 2
         self.bitset_size = -math.floor(
             filter_size * math.log(false_positive_probability) / (math.log(2) ** 2)
         )
-        self.filter_size = filter_size
+        # hash count: k = m / n * ln(2)
         self.hash_count = math.ceil(self.bitset_size / filter_size * math.log(2))
         self.bits = bytearray(math.ceil(self.bitset_size / 8))
 
-    def get_bit_positions(self, data: bytes) -> List[int]:
-        return get_bit_positions(data, self.hash_count, self.filter_size)
+    def get_bit_positions(self, data: bytes) -> Tuple[int, ...]:
+        return get_bit_positions(data, self.hash_count, self.bitset_size)
 
     def __getitem__(self, key: int) -> bool:
         if key < 0 or key >= self.bitset_size:
@@ -112,7 +116,7 @@ class PublicKey:
     """BFE public key"""
 
     hash_count: int
-    filter_size: int
+    bitset_size: int
     key_size: int
     pk: G2
 
@@ -174,7 +178,7 @@ def keygen(
             key_size,
             pk,
         ),
-        PublicKey(bloom_filter.hash_count, filter_size, key_size, pk),
+        PublicKey(bloom_filter.hash_count, bloom_filter.bitset_size, key_size, pk),
     )
 
 
@@ -198,7 +202,7 @@ def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
         u,
         tuple(
             internal_encrypt(pkr, identity, key)
-            for identity in get_bit_positions(bytes(u), pk.hash_count, pk.filter_size)
+            for identity in get_bit_positions(bytes(u), pk.hash_count, pk.bitset_size)
         ),
     )
 
