@@ -155,17 +155,18 @@ def keygen(
 ) -> Tuple[PrivateKey, PublicKey]:
     """Generate a new key pair."""
 
-    exponent = rand_BN_order()
-    pk = generator_G2(exponent)
-
+    exponent = rand_BN_order()  # BF secret key
+    pk = generator_G2(exponent)  # BF public key
     bloom_filter = BloomFilter(filter_size, false_positive_probability)
 
+    # BF key extraction
     def extract(identity: int) -> G1:
         return map_identity(identity) ** exponent
 
     return (
         PrivateKey(
             bloom_filter,
+            # extract derived keys for all identities
             [extract(identity) for identity in range(bloom_filter.bitset_size)],
             key_size,
             pk,
@@ -181,10 +182,13 @@ def internal_encrypt(pkr: G2, identity: int, message: bytes) -> bytes:
 def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
     """Encapsulate a freshly sampled key."""
 
+    # sample a random value for FO
     key = os.urandom(pk.key_size)
+    # derive r and k
     r, k = hash_r(key, pk.key_size)
 
     u = generator_G2(r)
+    # instead of applying r to each pairing, precompute pk ** r
     pkr = pk.pk ** r
 
     return k, Ciphertext(
@@ -200,33 +204,38 @@ def puncture(sk: PrivateKey, ctxt: Ciphertext) -> None:
     """Puncture secret key on a ciphertext."""
 
     for identity in sk.bloom_filter.get_bit_positions(bytes(ctxt.u)):
-        sk.bloom_filter[identity] = True
-        sk.secret_keys[identity] = None
+        sk.bloom_filter[identity] = True  # set bit in Bloom filter
+        sk.secret_keys[identity] = None  # remove associated key
 
 
 def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
     """Decapsulate a key."""
 
-    def internal_decrypt(v: bytes, sk: G1) -> bytes:
+    def internal_decrypt(sk: G1, v: bytes) -> bytes:
         return hash_and_xor(pair(sk, ctxt.u), v)
 
+    # obtain encrypted key from one of the ciphertexts
     key: Optional[bytes] = None
     bit_positions = sk.bloom_filter.get_bit_positions(bytes(ctxt.u))
     for v, identity in zip(ctxt.v, bit_positions):
+        # check if key is available for the identity
         if not sk.bloom_filter[identity]:
-            key = internal_decrypt(v, sk[identity])
+            key = internal_decrypt(sk[identity], v)
             break
-
-    if key is None:
+    else:
+        # no working derived keys available
         return None
 
+    # derive r and k
     r, k = hash_r(key, sk.key_size)
     pkr = sk.pk ** r
 
+    # recompute ciphertext and verify equality
+    recomputed_u = generator_G2(r)
     recomputed_v = tuple(
         internal_encrypt(pkr, identity, key) for identity in bit_positions
     )
-    return k if recomputed_v == ctxt.v else None
+    return k if recomputed_u == ctxt.u and recomputed_v == ctxt.v else None
 
 
 def test_bfe() -> None:
