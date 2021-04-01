@@ -44,10 +44,23 @@ _relic_version = tuple(map(Integer, relic.RLC_VERSION.split(b".")))
 
 
 def _relic_clean():
+    """Clean up relic
+
+    Only call this function on exit if _relic_init returned True in its first return value.
+    """
+
     relic.core_clean()
 
 
 def _relic_init():
+    """Initialize relic if necessary.
+
+    This function returns a tuple of three bools:
+    * 1st bool: a call to _relic_clean is required on exit.
+    * 2nd bool: relic's core has been initialized successfully
+    * 3rd bool: relic's pairing functionality has been initialized successfully
+    """
+
     # relic up to 0.5.0 does not perform internal refcounting
     if _relic_version <= (0, 5, 0):
         if relic.core_get() is not NULL:
@@ -70,6 +83,12 @@ cdef class BN:
         relic.bn_new(self.value)
 
     def __init__(self, bytes buf=None):
+        """Initialize a new integer.
+
+        If the optional buf argument is specified, the value will be initialized from the bytes
+        buffer.
+        """
+
         if buf is not None:
             relic.bn_read_bin(self.value, buf, len(buf))
 
@@ -77,6 +96,8 @@ cdef class BN:
         relic.bn_free(self.value)
 
     def copy(self):
+        """Return a copy of the integer."""
+
         cdef BN other = BN()
         relic.bn_copy(other.value, self.value)
         return other
@@ -285,7 +306,7 @@ cpdef BN rand_BN_mod(BN mod):
 
 
 def rand_BN_order():
-    """Returns a randomly sampled exponent."""
+    """Return a randomly sampled exponent."""
 
     cdef BN value = BN()
     cdef BN order = BN()
@@ -331,6 +352,12 @@ cdef class G1:
         relic.g1_new(self.value)
 
     def __init__(self, bytes buf=None):
+        """Initialize new group element.
+
+        If the optional buf argument is specified, the element will be initialized from the bytes
+        buffer.
+        """
+
         if buf is not None:
             relic.g1_read_bin(self.value, buf, len(buf))
 
@@ -382,6 +409,8 @@ cdef class G1:
         return relic.g1_cmp(self.value, (<G1>other).value) != 0
 
     def is_neutral(self):
+        """Returns True if the element is the neutral element."""
+
         return bool(relic.g1_is_infty(self.value))
 
     def __bytes__(self):
@@ -397,6 +426,8 @@ cdef class G1:
         relic.g1_norm(self.value, self.value)
 
     def invert(self):
+        """Compute and return the inverse of the element."""
+
         cdef G1 result = G1()
         relic.g1_neg(result.value, self.value)
         return result
