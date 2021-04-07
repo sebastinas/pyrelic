@@ -54,7 +54,7 @@ import itertools
 import enum
 import struct
 from dataclasses import dataclass, field
-from typing import Union, Sequence, Any, Optional, TypeVar, Callable, cast, Tuple
+from typing import Union, Sequence, Any, Optional, TypeVar, Callable, cast, Tuple, Dict
 
 T = TypeVar("T")
 
@@ -374,24 +374,40 @@ def test_hpre() -> None:
 
 
 @dataclass
+class CombParams:
+    hpra_params: HPRAParams
+    precomputed: Tuple[Dict[GT, BN], ...]
+
+
+@dataclass
 class CombSPrivateKey:
     sk: HPRASPrivateKey
     rsk: HPREPrivateKey
     rpk: HPREPublicKey
 
 
-def comb_params(l: int) -> HPRAParams:
-    """Generate public parameters for HPRA."""
+def comb_params(l: int, min_exps: int, max_exps: int) -> CombParams:
+    """Generate public parameters and precompute group elements for DLOG within the range [min_exps,
+    max_exps)."""
 
     assert l >= 1
-    return hpra_params(l)
+    assert min_exps < max_exps
+
+    pp = hpra_params(l)
+    exps = tuple(BN_from_int(exp) for exp in range(min_exps, max_exps))
+
+    def precompute_mapping(base: G1) -> Dict[GT, BN]:
+        base_gt = pair(base, generator_G2())
+        return {base_gt ** exp: exp for exp in exps}
+
+    return CombParams(pp, tuple(precompute_mapping(base) for base in pp.gs))
 
 
-def comb_sgen(pp: HPRAParams) -> Tuple[HPRASID, CombSPrivateKey, HPRASPublicKey]:
+def comb_sgen(pp: CombParams) -> Tuple[HPRASID, CombSPrivateKey, HPRASPublicKey]:
     """Generate "signing" key, i.e., the key of the source."""
 
-    id, sk, pk = hpra_sgen(pp)
-    rsk, rpk = hpre_keygen(pp.l + 1)
+    id, sk, pk = hpra_sgen(pp.hpra_params)
+    rsk, rpk = hpre_keygen(pp.hpra_params.l + 1)
 
     return id, CombSPrivateKey(sk, rsk, rpk), pk
 
@@ -400,6 +416,7 @@ def comb_sgen(pp: HPRAParams) -> Tuple[HPRASID, CombSPrivateKey, HPRASPublicKey]
 class CombMK:
     mk: HPRAVMK
     rsk: HPREPrivateKey
+    pp: CombParams
 
 
 @dataclass
@@ -408,12 +425,12 @@ class CombAUX:
     rpk: HPREPublicKey
 
 
-def comb_vgen(pp: HPRAParams) -> Tuple[CombMK, CombAUX]:
+def comb_vgen(pp: CombParams) -> Tuple[CombMK, CombAUX]:
     """Generate "verification" key, i.e., the key of the receiver."""
 
-    mk, aux = hpra_vgen(pp)
-    rsk, rpk = hpre_keygen(pp.l + 1)
-    return CombMK(mk, rsk), CombAUX(aux, rpk)
+    mk, aux = hpra_vgen(pp.hpra_params)
+    rsk, rpk = hpre_keygen(pp.hpra_params.l + 1)
+    return CombMK(mk, rsk, pp), CombAUX(aux, rpk)
 
 
 @dataclass
@@ -519,7 +536,7 @@ def comb_averify(
     tau: Any,
     ids: Sequence[HPRASID],
     weights: Sequence[BN],
-) -> Union[Sequence[GT], bool]:
+) -> Union[Tuple[BN, ...], bool]:
     """Verify and decrypt authenticated message vector."""
 
     def hpra_averify(
@@ -548,7 +565,11 @@ def comb_averify(
     ms = hpre_decrypt(mk.rsk, cs)
     msu, r = ms[:-1], ms[-1]
     return (
-        msu
+        tuple(
+            # compute DLOGs from pre-computed lookup tables
+            mk.pp.precomputed[idx][msg]
+            for idx, msg in enumerate(msu)
+        )
         if hpra_averify(mk.mk, msu, mu / (r ** mk.mk.alpha), tau, ids, weights)
         else False
     )
@@ -556,15 +577,15 @@ def comb_averify(
 
 def test_comb() -> None:
     l = 3  # length of the message vectors
-    pp = comb_params(l)
+    pp = comb_params(l, -100, 100)
     # Generate two signer keys
     id1, sk1, pk1 = comb_sgen(pp)
     id2, sk2, pk2 = comb_sgen(pp)
     # Generate one verification key
     mk, aux = comb_vgen(pp)
 
-    msg1 = tuple(rand_BN_order() for x in range(l))
-    msg2 = tuple(rand_BN_order() for x in range(l))
+    msg1 = tuple(BN_from_int(x + 1) for x in range(l))
+    msg2 = tuple(BN_from_int(2 * x) for x in range(l))
 
     tau = b"some random tag"
 
@@ -577,9 +598,7 @@ def test_comb() -> None:
     weights: Tuple[BN, ...] = (BN_from_int(1),)
     ctxt, mu = comb_agg((ak1,), (sigma1,), weights)
 
-    expected_msg = tuple(
-        pair(base ** (m1 * weights[0]), generator_G2()) for base, m1 in zip(pp.gs, msg1)
-    )
+    expected_msg = tuple((m1 * weights[0]) for m1 in msg1)
     msg = comb_averify(mk, ctxt, mu, tau, (id1,), weights)
 
     assert msg
@@ -596,8 +615,7 @@ def test_comb() -> None:
     ctxt, mu = comb_agg((ak1, ak2), (sigma1, sigma2), weights)
 
     expected_msg = tuple(
-        pair(base ** (m1 * weights[0] + m2 * weights[1]), generator_G2())
-        for base, m1, m2 in zip(pp.gs, msg1, msg2)
+        (m1 * weights[0] + m2 * weights[1]) for m1, m2 in zip(msg1, msg2)
     )
     # Verify and decrypt
     msg = comb_averify(mk, ctxt, mu, tau, (id1, id2), weights)
