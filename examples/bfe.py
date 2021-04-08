@@ -37,8 +37,8 @@ from dataclasses import dataclass
 from pyrelic import (
     rand_BN_order,
     pair,
-    generator_G2,
-    hash_to_G1,
+    generator_G1,
+    hash_to_G2,
     BN,
     G1,
     G2,
@@ -83,9 +83,9 @@ class PrivateKey:
     """BFE private key"""
 
     bloom_filter: BloomFilter
-    secret_keys: List[Optional[G1]]
+    secret_keys: List[Optional[G2]]
     key_size: int
-    pk: G2
+    pk: G1
 
     def __contains__(self, identity: int) -> bool:
         """Return True if key for the given identity is available."""
@@ -96,7 +96,7 @@ class PrivateKey:
             and self.secret_keys[identity] is not None
         )
 
-    def __getitem__(self, identity: int) -> G1:
+    def __getitem__(self, identity: int) -> G2:
         """Return key associated to an identity."""
 
         key = self.secret_keys[identity]
@@ -120,19 +120,19 @@ class PublicKey:
 
     bloom_filter: BloomFilter
     key_size: int
-    pk: G2
+    pk: G1
 
 
 @dataclass
 class Ciphertext:
     """BFE ciphertext"""
 
-    u: G2
+    u: G1
     v: Sequence[bytes]
 
 
-def map_identity(identity: int) -> G1:
-    return hash_to_G1(struct.pack("<Q", identity))
+def map_identity(identity: int) -> G2:
+    return hash_to_G2(struct.pack("<Q", identity))
 
 
 def hash_r(key: bytes, key_size: int) -> Tuple[BN, bytes]:
@@ -165,18 +165,17 @@ def keygen(
     """Generate a new key pair."""
 
     exponent = rand_BN_order()  # BF secret key
-    pk = generator_G2(exponent)  # BF public key
+    pk = generator_G1(exponent)  # BF public key
     bloom_filter = BloomFilter(filter_size, false_positive_probability)
-
-    # BF key extraction
-    def extract(identity: int) -> G1:
-        return map_identity(identity) ** exponent
 
     return (
         PrivateKey(
             bloom_filter,
             # extract derived keys for all identities
-            [extract(identity) for identity in range(bloom_filter.bitset_size)],
+            [
+                map_identity(identity) ** exponent
+                for identity in range(bloom_filter.bitset_size)
+            ],
             key_size,
             pk,
         ),
@@ -184,8 +183,8 @@ def keygen(
     )
 
 
-def internal_encrypt(pkr: G2, identity: int, message: bytes) -> bytes:
-    return hash_and_xor(pair(map_identity(identity), pkr), message)
+def internal_encrypt(pkr: G1, identity: int, message: bytes) -> bytes:
+    return hash_and_xor(pair(pkr, map_identity(identity)), message)
 
 
 def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
@@ -196,7 +195,7 @@ def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
     # derive r and k
     r, k = hash_r(key, pk.key_size)
 
-    u = generator_G2(r)
+    u = generator_G1(r)
     # instead of applying r to each pairing, precompute pk ** r
     pkr = pk.pk ** r
 
@@ -221,8 +220,8 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
 
     assert len(ctxt.v) == sk.bloom_filter.hash_count
 
-    def internal_decrypt(sk: G1, v: bytes) -> bytes:
-        return hash_and_xor(pair(sk, ctxt.u), v)
+    def internal_decrypt(sk: G2, v: bytes) -> bytes:
+        return hash_and_xor(pair(ctxt.u, sk), v)
 
     # obtain encrypted key from one of the ciphertexts
     key: Optional[bytes] = None
@@ -241,7 +240,7 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
     pkr = sk.pk ** r
 
     # recompute ciphertext and verify equality
-    recomputed_u = generator_G2(r)
+    recomputed_u = generator_G1(r)
     recomputed_v = tuple(
         internal_encrypt(pkr, identity, key) for identity in bit_positions
     )
