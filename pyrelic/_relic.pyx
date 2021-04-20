@@ -426,11 +426,16 @@ cdef class G1:
         relic.g1_norm(self.value, self.value)
 
     def invert(self):
-        """Compute and return the inverse of the element."""
+        """Computes and returns the inverse of the element."""
 
         cdef G1 result = G1()
         relic.g1_neg(result.value, self.value)
         return result
+
+    def set_neutral(self):
+        """Sets the element to the neutral element."""
+
+        relic.g1_set_infty(self.value)
 
 
 cpdef BN order():
@@ -581,6 +586,8 @@ cdef class G2:
         return relic.g2_cmp(self.value, (<G2>other).value) != 0
 
     def is_neutral(self):
+        """Returns True if the element is the neutral element."""
+
         return bool(relic.g2_is_infty(self.value))
 
     def normalize(self):
@@ -596,9 +603,16 @@ cdef class G2:
         return f"G2({bytes(self)!r})"
 
     def invert(self):
+        """Computes and returns the inverse of the element."""
+
         cdef G2 result = G2()
         relic.g2_neg(result.value, self.value)
         return result
+
+    def set_neutral(self):
+        """Sets the element to the neutral element."""
+
+        relic.g2_set_infty(self.value)
 
 
 cpdef G2 generator_G2(BN exponent=None):
@@ -753,6 +767,11 @@ cdef class GT:
 
     def __repr__(self):
         return f"GT({bytes(self)!r})"
+
+    def set_neutral(self):
+        """Sets the element to the neutral element."""
+
+        relic.gt_set_unity(self.value)
 
 
 cpdef GT generator_GT(BN exponent=None):
