@@ -110,6 +110,7 @@ class PrivateKey:
 
         key = self.secret_keys[identity]
         if key is not None:
+            key.set_neutral()
             self.secret_keys[identity] = None
             del key
 
