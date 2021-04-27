@@ -1,3 +1,10 @@
+0.2.1
+-----
+
+* Add methods `is_neutral` and `set_neutral` to group elements.
+* Add implementation of structure preserving signatures on equivalence classes as example.
+* Extend documentation of examples.
+
 0.2
 ---
 
