@@ -21,7 +21,7 @@ If you are running Ubuntu 20.04, the easiest way to install `pyrelic` is via my
 sudo add-apt-repository -u ppa:s-ramacher/ait
 sudo apt install python3-pyrelic
 ```
-It comes with a prebuilt version of `relic` configured for the pairing-friendly BLS12-381 curve.
+It comes with a pre-built version of `relic` configured for the pairing-friendly BLS12-381 curve.
 
 Otherwise, `pyrelic` can be installed via `pip`:
 ```sh
@@ -43,9 +43,15 @@ pairing-based schemes:
   scheme](https://doi.org/10.1007/3-540-44647-8_13) (BasicIdent).
 * `examples/hpra.py`: Implements [homomorphic proxy
   re-authenticators](https://doi.org/10.1007/978-3-319-70972-7_7) for linear functions.
-* `examples/bfe.py`: Imeplemnts [Bloom Filter KEM](https://doi.org/10.1007/978-3-319-78372-7_14)
+* `examples/bfe.py`: Implements [Bloom Filter KEM](https://doi.org/10.1007/978-3-319-78372-7_14)
   based on the BF IBE.
 
 ## License
 
-The code is licensed under the MIT license.
+The code is licensed under the MIT license and was written by Sebastian Ramacher (AIT Austrian
+Institute of Technology).
+
+## Acknowledgements
+
+This work has been partially funded by the European Union’s Horizon 2020 research and innovation
+programme under grant agreement No 871473 ([KRAKEN](https://krakenh2020.eu/)).
