@@ -228,7 +228,7 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
     key: Optional[bytes] = None
     bit_positions = sk.bloom_filter.get_bit_positions(bytes(ctxt.u))
     for v, identity in zip(ctxt.v, bit_positions):
-        # check if key is available for the identity
+        # check if sk has a key for identitiy
         if identity in sk:
             key = internal_decrypt(sk[identity], v)
             break

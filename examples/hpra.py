@@ -494,7 +494,7 @@ def comb_agg(
     """Aggregate and reencrypt authenticated message vector."""
 
     def evalcs(cs: Sequence[HPRECiphertext], weights: Sequence[BN]) -> HPRECiphertext:
-        # The same as hpre_eval, but with the correct types level-2-ciphertexts.
+        # The same as hpre_eval, but with the correct types for level-2-ciphertexts.
         l = len(cs[0].cs)
         return HPRECiphertext(
             cs[0].level,
