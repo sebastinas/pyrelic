@@ -45,6 +45,8 @@ pairing-based schemes:
   re-authenticators](https://doi.org/10.1007/978-3-319-70972-7_7) for linear functions.
 * `examples/bfe.py`: Implements [Bloom Filter KEM](https://doi.org/10.1007/978-3-319-78372-7_14)
   based on the BF IBE.
+* `examples/spseq.py`: Implements a [structure-preserving signature
+  scheme on equivalence classes](https://doi.org/10.1007/978-3-662-45611-8_26).
 
 ## License
 
