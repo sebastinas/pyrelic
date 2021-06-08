@@ -22,9 +22,10 @@ import unittest
 import pyrelic
 from pyrelic import G1, G2, GT
 
-class TestSchemes:
+
+class DHKE:
     def test_dual_dhke(self):
-        #use case: https://engineering.fb.com/2020/07/10/open-source/private-matching/
+        # use case: https://engineering.fb.com/2020/07/10/open-source/private-matching/
         s1 = pyrelic.rand_BN_order()
         s2 = pyrelic.rand_BN_order()
 
@@ -32,20 +33,20 @@ class TestSchemes:
 
         for i in ids:
             p = self.hash_to_curve(i)
-            p1 = p**s1
-            p2 = p1**s2
+            p1 = p ** s1
+            p2 = p1 ** s2
 
-            p1_ = p**s2
-            p2_ = p1_**s1
+            p1_ = p ** s2
+            p2_ = p1_ ** s1
 
             self.assertEqual(p2, p2_)
 
-class G1(TestSchemes, unittest.TestCase):
+
+class G1(DHKE, unittest.TestCase):
     def hash_to_curve(self, msg):
         return pyrelic.hash_to_G1(msg)
 
-class G2(TestSchemes, unittest.TestCase):
+
+class G2(DHKE, unittest.TestCase):
     def hash_to_curve(self, msg):
         return pyrelic.hash_to_G2(msg)
-
-
