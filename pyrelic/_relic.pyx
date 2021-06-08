@@ -43,6 +43,14 @@ cdef extern from *:
 _relic_version = tuple(map(Integer, relic.RLC_VERSION.split(b".")))
 
 
+cdef bint _relic_error_occured():
+    return relic.core_get().code == relic.RLC_ERR
+
+
+cdef void _relic_clear_error():
+    relic.core_get().code = relic.RLC_OK
+
+
 def _relic_clean():
     """Clean up relic
 
@@ -91,6 +99,9 @@ cdef class BN:
 
         if buf is not None:
             relic.bn_read_bin(self.value, buf, len(buf))
+            if _relic_error_occured():
+                _relic_clear_error()
+                raise ValueError("Invalid byte encoding for BN element.")
 
     def __dealloc__(self):
         relic.bn_free(self.value)
@@ -360,6 +371,9 @@ cdef class G1:
 
         if buf is not None:
             relic.g1_read_bin(self.value, buf, len(buf))
+            if _relic_error_occured():
+                _relic_clear_error()
+                raise ValueError("Invalid byte encoding for element in G1.")
 
     def __dealloc__(self):
         relic.g1_free(self.value)
@@ -537,6 +551,9 @@ cdef class G2:
     def __init__(self, bytes buf=None):
         if buf is not None:
             relic.g2_read_bin(self.value, buf, len(buf))
+            if _relic_error_occured():
+                _relic_clear_error()
+                raise ValueError("Invalid byte encoding for element in G2.")
 
     def __dealloc__(self):
         relic.g2_free(self.value)
@@ -706,6 +723,9 @@ cdef class GT:
     def __init__(self, bytes buf=None):
         if buf is not None:
             relic.gt_read_bin(self.value, buf, len(buf))
+            if _relic_error_occured():
+                _relic_clear_error()
+                raise ValueError("Invalid byte encoding for element in GT.")
 
     def __dealloc__(self):
         relic.gt_free(self.value)

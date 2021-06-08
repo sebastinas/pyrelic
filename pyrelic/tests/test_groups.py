@@ -30,6 +30,10 @@ class GroupTests:
 
         self.assertEqual(element, self.group(bytes_element))
 
+    def test_invalid_bytes(self):
+        with self.assertRaises(ValueError):
+            self.group(b"invalid encoding")
+
     def test_repr(self):
         element = self.rand()
         repr_element = repr(element)

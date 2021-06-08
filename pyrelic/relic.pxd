@@ -27,7 +27,7 @@ cdef extern from "<relic/relic_core.h>" nogil:
     int RLC_POS
 
     ctypedef struct ctx_t:
-        pass
+        int code
 
     # relic init and clean up
     int core_init()
