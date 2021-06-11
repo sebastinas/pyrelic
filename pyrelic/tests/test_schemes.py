@@ -20,7 +20,12 @@
 
 import unittest
 import pyrelic
-from pyrelic import G1, G2, GT
+
+has_examples = True
+try:
+    from examples import bfibe, bls, hpra, spseq
+except ImportError:
+    has_examples = False
 
 
 class DHKE:
@@ -29,9 +34,7 @@ class DHKE:
         s1 = pyrelic.rand_BN_order()
         s2 = pyrelic.rand_BN_order()
 
-        ids = [b"some id", b"your name"]
-
-        for i in ids:
+        for i in (b"some id", b"your name"):
             p = self.hash_to_curve(i)
             p1 = p ** s1
             p2 = p1 ** s2
@@ -42,11 +45,27 @@ class DHKE:
             self.assertEqual(p2, p2_)
 
 
-class G1(DHKE, unittest.TestCase):
+class TestDHKEG1(DHKE, unittest.TestCase):
     def hash_to_curve(self, msg):
         return pyrelic.hash_to_G1(msg)
 
 
-class G2(DHKE, unittest.TestCase):
+class TestDHKEG2(DHKE, unittest.TestCase):
     def hash_to_curve(self, msg):
         return pyrelic.hash_to_G2(msg)
+
+
+@unittest.skipUnless(has_examples, "examples are not available")
+class TestSchemes:
+    def test_bfibe(self):
+        bfibe.test_bf_ibe()
+
+    def test_bls(self):
+        bls.test_bls()
+
+    def test_hpra(self):
+        hpra.test_hpra()
+
+    def test_spseq(self):
+        for l in range(3, 10):
+            spseq.test_spseq(l)
