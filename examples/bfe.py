@@ -27,7 +27,6 @@ EUROCRYPT 2018. https://eprint.iacr.org/2018/199.pdf.
 This example requires Python >= 3.7.
 """
 
-import array
 import hashlib
 import math
 import os

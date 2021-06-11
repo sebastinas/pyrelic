@@ -27,8 +27,6 @@ Cryptology 2019.
 This example requires Python >= 3.7.
 """
 
-import hashlib
-import struct
 from dataclasses import dataclass
 from pyrelic import (
     BN,
@@ -42,7 +40,7 @@ from pyrelic import (
     rand_BN_order,
     rand_G1,
 )
-from typing import Tuple, Sequence
+from typing import Tuple
 
 
 @dataclass
