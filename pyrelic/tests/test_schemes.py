@@ -19,13 +19,18 @@
 # SOFTWARE.
 
 import unittest
+import sys
+
 import pyrelic
 
 has_examples = True
 try:
-    from examples import bfibe, bls, hpra, spseq
+    import example
 except ImportError:
-    has_examples = False
+    has_example = False
+
+is_py37 = sys.version_info[:2] >= (3, 7)
+is_py38 = sys.version_info[:2] >= (3, 8)
 
 
 class DHKE:
@@ -55,17 +60,28 @@ class TestDHKEG2(DHKE, unittest.TestCase):
         return pyrelic.hash_to_G2(msg)
 
 
-@unittest.skipUnless(has_examples, "examples are not available")
 class TestSchemes:
+    @unittest.skipUnless(has_examples and is_py37, "BF-IBE example is not available")
     def test_bfibe(self):
+        from examples import bfibe
+
         bfibe.test_bf_ibe()
 
+    @unittest.skipUnless(has_examples and is_py37, "BLS example is not available")
     def test_bls(self):
+        from examples import bls
+
         bls.test_bls()
 
+    @unittest.skipUnless(has_examples and is_py38, "HPRA example is not available")
     def test_hpra(self):
+        from examples import hpra
+
         hpra.test_hpra()
 
+    @unittest.skipUnless(has_examples and is_py37, "SPSEQ example is not available")
     def test_spseq(self):
+        from examples import spseq
+
         for l in range(3, 10):
             spseq.test_spseq(l)
