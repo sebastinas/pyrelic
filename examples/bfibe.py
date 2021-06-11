@@ -35,7 +35,6 @@ from pyrelic import (
     G2,
     GT,
     rand_BN_order,
-    generator_G1,
     generator_G2,
     hash_to_G1,
     pair,

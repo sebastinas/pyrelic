@@ -40,21 +40,17 @@ from pyrelic import (
     generator_GT,
     hash_to_G1,
     mul_sim_G1,
-    neutral_G1,
     neutral_GT,
     pair,
     pair_product,
     rand_BN_order,
-    rand_G1,
-    rand_G2,
-    rand_GT,
 )
 import math
 import itertools
 import enum
 import struct
 from dataclasses import dataclass, field
-from typing import Union, Sequence, Any, Optional, TypeVar, Callable, cast, Tuple, Dict
+from typing import Union, Sequence, Any, TypeVar, Callable, cast, Tuple, Dict
 
 T = TypeVar("T")
 
