@@ -22,7 +22,7 @@
 
 Based on Georg Fuchsbauer, Christian Hanser, Daniel Slamanig: Structure-Preserving
 Signatures on Equivalence Classes and Constant-Size Anonymous Credentials. Journal of
-Cryptology 2019.
+Cryptology 2019. https://eprint.iacr.org/2014/944
 
 This example requires Python >= 3.7.
 """
