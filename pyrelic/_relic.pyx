@@ -96,7 +96,12 @@ def _relic_init():
 
 
 cdef class BN:
-    """Represents an arbitrary length integer."""
+    """Represents an "arbitrary" length integer.
+
+    Relic internally expects integers represented by a specific type. While most functions
+    transparently convert `int` instances to `BN` instances, in some cases it's helpful to directly
+    perform calculations with `BN`.
+    """
 
     def __cinit__(self):
         relic.bn_null(self.value)
