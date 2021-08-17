@@ -18,6 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
 from typing import Union, Optional, Tuple, Any, Sequence, Iterable
 from . import _relic
 from ._relic import BN, neutral_BN, rand_BN_mod, rand_BN_order, BN_from_int
@@ -122,7 +123,7 @@ def sum_G1(values: Iterable[G1], base: Optional[G1] = None) -> G1:
     )
 
 
-def mul_sim_G1(
+def product_sum_G1(
     values: Sequence[G1], scalars: Sequence[BN], base: Optional[G1] = None
 ) -> G1:
     return G1(
@@ -132,6 +133,13 @@ def mul_sim_G1(
             base.element if base is not None else None,
         )
     )
+
+
+def mul_sim_G1(
+    values: Sequence[G1], scalars: Sequence[BN], base: Optional[G1] = None
+) -> G1:
+    warnings.warn("Use product_sum_G1 instead.", DeprecationWarning)
+    return product_sum_G1(values, scalars, base)
 
 
 class G2:
@@ -224,7 +232,7 @@ def sum_G2(values: Iterable[G2], base: Optional[G2] = None) -> G2:
     )
 
 
-def mul_sim_G2(
+def product_sum_G2(
     values: Sequence[G2], scalars: Sequence[BN], base: Optional[G2] = None
 ) -> G2:
     return G2(
@@ -234,6 +242,13 @@ def mul_sim_G2(
             base.element if base is not None else None,
         )
     )
+
+
+def mul_sim_G2(
+    values: Sequence[G2], scalars: Sequence[BN], base: Optional[G2] = None
+) -> G2:
+    warnings.warn("Use product_sum_G2 instead.", DeprecationWarning)
+    return product_sum_G2(values, scalars, base)
 
 
 def pair(g1: G1, g2: G2) -> GT:
