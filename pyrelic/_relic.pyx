@@ -51,6 +51,18 @@ cdef void _relic_clear_error():
     relic.core_get().code = relic.RLC_OK
 
 
+cdef bint _check_mul_length(const relic.bn_t left, const relic.bn_t right):
+    if relic.ALLOC != relic.DYNAMIC:
+        return relic.bn_bits(left) + relic.bn_bits(right) <= relic.RLC_BN_BITS
+    return True
+
+
+cdef bint _check_add_length(const relic.bn_t left, const relic.bn_t right):
+    if relic.ALLOC != relic.DYNAMIC:
+        return max(relic.bn_bits(left), relic.bn_bits(right)) + 1 <= relic.RLC_BN_BITS
+    return True
+
+
 def _relic_clean():
     """Clean up relic
 
@@ -118,12 +130,16 @@ cdef class BN:
     def __iadd__(self, other):
         cdef BN tmp
         if isinstance(other, BN):
-            relic.bn_add(self.value, self.value, (<BN>other).value)
+            tmp = <BN>other
         elif isinstance(other, int):
             tmp = BN_from_int(other)
-            relic.bn_add(self.value, self.value, tmp.value)
         else:
             return NotImplemented
+
+        if not _check_add_length(self.value, tmp.value):
+            raise ValueError("Result of addition is too large.")
+
+        relic.bn_add(self.value, self.value, tmp.value)
         return self
 
     def __add__(self, other):
@@ -138,24 +154,32 @@ cdef class BN:
             return NotImplemented
 
         if isinstance(other, BN):
-            result = BN()
-            relic.bn_add(result.value, self_bn.value, (<BN>other).value)
+            tmp = <BN>other
         elif isinstance(other, int):
-            result = BN_from_int(other)
-            relic.bn_add(result.value, self_bn.value, result.value)
+            tmp = BN_from_int(other)
         else:
             return NotImplemented
+
+        if not _check_add_length(self_bn.value, tmp.value):
+            raise ValueError("Result of addition is too large.")
+
+        result = BN()
+        relic.bn_add(result.value, self_bn.value, tmp.value)
         return result
 
     def __isub__(self, other):
         cdef BN tmp
         if isinstance(other, BN):
-            relic.bn_sub(self.value, self.value, (<BN>other).value)
+            tmp = <BN>other
         elif isinstance(other, int):
             tmp = BN_from_int(other)
-            relic.bn_sub(self.value, self.value, tmp.value)
         else:
             return NotImplemented
+
+        if not _check_add_length(self.value, tmp.value):
+            raise ValueError("Result of subtraction is too large.")
+
+        relic.bn_sub(self.value, self.value, tmp.value)
         return self
 
     def __sub__(self, other):
@@ -170,13 +194,17 @@ cdef class BN:
             return NotImplemented
 
         if isinstance(other, BN):
-            result = BN()
-            relic.bn_sub(result.value, self_bn.value, (<BN>other).value)
+            tmp = <BN>other
         elif isinstance(other, int):
-            result = BN_from_int(other)
-            relic.bn_sub(result.value, self_bn.value, result.value)
+            tmp = BN_from_int(other)
         else:
             return NotImplemented
+
+        if not _check_add_length(self_bn.value, tmp.value):
+            raise ValueError("Result of subtraction is too large.")
+
+        result = BN()
+        relic.bn_sub(result.value, self_bn.value, tmp.value)
         return result
 
     def __neg__(self):
@@ -187,17 +215,22 @@ cdef class BN:
     def __imul__(self, other):
         cdef BN tmp
         if isinstance(other, BN):
-            relic.bn_mul(self.value, self.value, (<BN>other).value)
+            tmp = <BN>other
         elif isinstance(other, int):
             tmp = BN_from_int(other)
-            relic.bn_mul(self.value, self.value, tmp.value)
         else:
             return NotImplemented
+
+        if not _check_mul_length(self.value, tmp.value):
+            raise ValueError("Result of multiplication is too large.")
+
+        relic.bn_mul(self.value, self.value, (<BN>other).value)
         return self
 
     def __mul__(self, other):
         cdef BN result
         cdef BN self_bn
+        cdef BN tmp
 
         if isinstance(self, BN):
             self_bn = <BN>self
@@ -207,13 +240,17 @@ cdef class BN:
             return NotImplemented
 
         if isinstance(other, BN):
-            result = BN()
-            relic.bn_mul(result.value, self_bn.value, (<BN>other).value)
+            tmp = <BN>other
         elif isinstance(other, int):
-            result = BN_from_int(other)
-            relic.bn_mul(result.value, self_bn.value, result.value)
+            tmp = BN_from_int(other)
         else:
             return NotImplemented
+
+        if not _check_mul_length(self_bn.value, tmp.value):
+            raise ValueError("Result of multiplication is too large.")
+
+        result = BN()
+        relic.bn_mul(result.value, self_bn.value, tmp.value)
         return result
 
     def __mod__(BN self, BN other):

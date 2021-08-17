@@ -38,9 +38,15 @@ cdef extern from "<relic/relic_core.h>" nogil:
 cdef extern from "<relic/relic_conf.h>" nogil:
     cdef const char* RLC_VERSION
 
+    # allocation mode
+    int ALLOC
+    int AUTO
+    int DYNAMIC
+    int STACK
 
 cdef extern from "<relic/relic_bn.h>" nogil:
     int WSIZE
+    int RLC_BN_BITS
 
     ctypedef uint64_t dig_t
 
@@ -76,6 +82,7 @@ cdef extern from "<relic/relic_bn.h>" nogil:
     void bn_read_raw(bn_t, const dig_t*, int)
     void bn_write_raw(dig_t*, int, const bn_t)
     int bn_size_raw(const bn_t)
+    int bn_bits(const bn_t)
 
     # bn comparison
     int bn_cmp(const bn_t, const bn_t)
