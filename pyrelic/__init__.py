@@ -69,7 +69,7 @@ def _init() -> None:
     if not core_success:
         raise RuntimeError("Failed to initialize relic (core)!")
     if not pair_success:
-        raise RuntimeError("Failed to initilaize relic (pairing)!")
+        raise RuntimeError("Failed to initialize relic (pairing)!")
 
 
 class Relic:
