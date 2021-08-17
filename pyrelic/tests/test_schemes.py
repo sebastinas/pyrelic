@@ -25,9 +25,9 @@ import pyrelic
 
 has_examples = True
 try:
-    import example
+    import examples
 except ImportError:
-    has_example = False
+    has_examples = False
 
 is_py37 = sys.version_info[:2] >= (3, 7)
 is_py38 = sys.version_info[:2] >= (3, 8)
