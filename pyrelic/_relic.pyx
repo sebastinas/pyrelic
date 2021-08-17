@@ -539,7 +539,7 @@ cpdef G1 hash_to_G1(bytes data):
     return value
 
 
-cpdef G1 mul_sim_G1(values, scalars, G1 base=None):
+cpdef G1 power_product_G1(values, scalars, G1 base=None):
     """Computes the product of all elements raised to the respective scalars."""
 
     cdef size_t length = len(values), idx
@@ -711,7 +711,7 @@ cpdef G2 hash_to_G2(bytes data):
     return value
 
 
-cpdef G2 mul_sim_G2(values, scalars, G2 base=None):
+cpdef G2 power_product_G2(values, scalars, G2 base=None):
     """Computes the product of all elements raised to the respective scalars."""
 
     cdef size_t length = len(values), idx

@@ -34,9 +34,9 @@ from pyrelic import (
     G2,
     generator_G1,
     generator_G2,
-    mul_sim_G1,
     order,
     pair_product,
+    power_product_G1,
     rand_BN_order,
     rand_G1,
 )
@@ -88,7 +88,7 @@ def sign(sk: PrivateKey, message: MessageVector) -> Signature:
     assert len(sk.x) == len(message.m)
 
     y = rand_BN_order()
-    z = mul_sim_G1(message.m, sk.x) ** y
+    z = power_product_G1(message.m, sk.x) ** y
     yinv = y.mod_inv(order())
 
     return Signature(z, generator_G1(yinv), generator_G2(yinv))

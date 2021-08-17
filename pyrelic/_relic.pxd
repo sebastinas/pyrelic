@@ -40,7 +40,7 @@ cpdef G1 generator_G1(BN exponent=*)
 cpdef G1 neutral_G1()
 cpdef G1 rand_G1()
 cpdef G1 hash_to_G1(bytes data)
-cpdef G1 mul_sim_G1(values, scalars, G1 base=*)
+cpdef G1 power_product_G1(values, scalars, G1 base=*)
 
 cdef class G2:
     cdef relic.g2_t value
@@ -49,7 +49,7 @@ cpdef G2 generator_G2(BN exponent=*)
 cpdef G2 neutral_G2()
 cpdef G2 rand_G2()
 cpdef G2 hash_to_G2(bytes data)
-cpdef G2 mul_sim_G2(values, scalars, G2 base=*)
+cpdef G2 power_product_G2(values, scalars, G2 base=*)
 
 cdef class GT:
     cdef relic.gt_t value

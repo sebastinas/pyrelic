@@ -39,10 +39,10 @@ from pyrelic import (
     generator_G2,
     generator_GT,
     hash_to_G1,
-    mul_sim_G1,
     neutral_GT,
     pair,
     pair_product,
+    power_product_G1,
     rand_BN_order,
 )
 import math
@@ -141,13 +141,13 @@ def hpra_vgen(pp: HPRAParams) -> Tuple[HPRAVMK, None]:
 
 def hpra_sign(sk: HPRASPrivateKey, ms: Sequence[BN], tau: Any, id_=None) -> G1:
     sigma = hpra_hash(tau, id_ if id_ is not None else sk.pk.pk1)
-    sigma = mul_sim_G1(sk.pk.pp.gs, ms, sigma)
+    sigma = power_product_G1(sk.pk.pp.gs, ms, sigma)
     return sigma ** sk.beta
 
 
 def hpra_verify(pk: HPRASPublicKey, ms: Sequence[BN], tau: Any, sigma: G1) -> bool:
     sigmap = hpra_hash(tau, pk.pk1)
-    sigmap = mul_sim_G1(pk.pp.gs, ms, sigmap)
+    sigmap = power_product_G1(pk.pp.gs, ms, sigmap)
     return pair(sigmap, pk.pk1) == pair(sigma, generator_G2())
 
 
@@ -180,7 +180,7 @@ def hpra_averify(
 ) -> bool:
     ghat = generator_G2(mk.alpha)
     muprime = pair_product(
-        (mul_sim_G1(mk.pp.gs, msg), ghat),
+        (power_product_G1(mk.pp.gs, msg), ghat),
         *(
             (
                 hpra_hash(tau, _id) ** weight,

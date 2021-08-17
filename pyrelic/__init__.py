@@ -18,27 +18,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
+from typing import Optional, Sequence
+
 from ._relic import (
     # BN
     BN,
     BN_from_int,
-    rand_BN_mod,
     neutral_BN,
+    rand_BN_mod,
+    rand_BN_order,
     # G1
     G1,
     generator_G1,
     hash_to_G1,
-    mul_sim_G1,
     neutral_G1,
     order,
+    power_product_G1,
     rand_G1,
-    rand_BN_order,
     # G2
     G2,
     generator_G2,
     hash_to_G2,
-    mul_sim_G2,
     neutral_G2,
+    power_product_G2,
     rand_G2,
     # Gt
     GT,
@@ -74,8 +77,6 @@ def _init() -> None:
 
 class Relic:
     def __init__(self) -> None:
-        import warnings
-
         warnings.warn(
             "Using Relic is deprecated and is no longer needed.", DeprecationWarning
         )
@@ -85,6 +86,20 @@ class Relic:
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         pass
+
+
+def mul_sim_G1(
+    values: Sequence[G1], scalars: Sequence[BN], base: Optional[G1] = None
+) -> G1:
+    warnings.warn("Use power_product_G1 instead.", DeprecationWarning)
+    return power_product_G1(values, scalars, base)
+
+
+def mul_sim_G2(
+    values: Sequence[G2], scalars: Sequence[BN], base: Optional[G2] = None
+) -> G2:
+    warnings.warn("Use power_product_G2 instead.", DeprecationWarning)
+    return power_product_G2(values, scalars, base)
 
 
 _init()

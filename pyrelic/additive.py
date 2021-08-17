@@ -117,7 +117,7 @@ def mul_sim_G1(
     values: Sequence[G1], scalars: Sequence[BN], base: Optional[G1] = None
 ) -> G1:
     return G1(
-        _relic.mul_sim_G1(
+        _relic.power_product_G1(
             tuple(g1.element for g1 in values),
             scalars,
             base.element if base is not None else None,
@@ -210,7 +210,7 @@ def mul_sim_G2(
     values: Sequence[G2], scalars: Sequence[BN], base: Optional[G2] = None
 ) -> G2:
     return G2(
-        _relic.mul_sim_G2(
+        _relic.power_product_G2(
             tuple(g1.element for g1 in values),
             scalars,
             base.element if base is not None else None,
