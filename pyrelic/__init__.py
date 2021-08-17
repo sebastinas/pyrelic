@@ -35,6 +35,7 @@ from ._relic import (
     neutral_G1,
     order,
     power_product_G1,
+    product_G1,
     rand_G1,
     # G2
     G2,
@@ -42,6 +43,7 @@ from ._relic import (
     hash_to_G2,
     neutral_G2,
     power_product_G2,
+    product_G2,
     rand_G2,
     # Gt
     GT,

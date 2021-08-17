@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import Union, Optional, Tuple, Any, Sequence
+from typing import Union, Optional, Tuple, Any, Sequence, Iterable
 from . import _relic
 from ._relic import BN, neutral_BN, rand_BN_mod, rand_BN_order, BN_from_int
 from ._relic import GT, neutral_GT, rand_GT, generator_GT
@@ -113,6 +113,15 @@ def hash_to_G1(data: bytes) -> G1:
     return G1(_relic.hash_to_G1(data))
 
 
+def sum_G1(values: Iterable[G1], base: Optional[G1] = None) -> G1:
+    return G1(
+        _relic.product_G1(
+            (value.element for value in values),
+            base.element if base is not None else None,
+        )
+    )
+
+
 def mul_sim_G1(
     values: Sequence[G1], scalars: Sequence[BN], base: Optional[G1] = None
 ) -> G1:
@@ -204,6 +213,15 @@ def rand_G2() -> G2:
 
 def hash_to_G2(data: bytes) -> G2:
     return G2(_relic.hash_to_G2(data))
+
+
+def sum_G2(values: Iterable[G2], base: Optional[G2] = None) -> G2:
+    return G2(
+        _relic.product_G2(
+            (value.element for value in values),
+            base.element if base is not None else None,
+        )
+    )
 
 
 def mul_sim_G2(

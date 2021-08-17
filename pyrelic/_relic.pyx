@@ -539,6 +539,25 @@ cpdef G1 hash_to_G1(bytes data):
     return value
 
 
+cpdef G1 product_G1(values, G1 base=None):
+    """Computes the product of all elements."""
+
+    cdef G1 tmp, result = G1()
+    if base is not None:
+        relic.g1_copy(result.value, base.value)
+    else:
+        relic.g1_set_infty(result.value)
+
+    for value in values:
+        if not isinstance(value, G1):
+            raise TypeError(f"Expected element of type G1, got {type(value)}.")
+
+        tmp = <G1>value
+        relic.g1_add(result.value, result.value, tmp.value)
+
+    return result
+
+
 cpdef G1 power_product_G1(values, scalars, G1 base=None):
     """Computes the product of all elements raised to the respective scalars."""
 
@@ -709,6 +728,25 @@ cpdef G2 hash_to_G2(bytes data):
     cdef G2 value = G2()
     relic.g2_map(value.value, &view[0], view.size);
     return value
+
+
+cpdef G2 product_G2(values, G2 base=None):
+    """Computes the product of all elements."""
+
+    cdef G2 tmp, result = G2()
+    if base is not None:
+        relic.g2_copy(result.value, base.value)
+    else:
+        relic.g2_set_infty(result.value)
+
+    for value in values:
+        if not isinstance(value, G2):
+            raise TypeError(f"Expected element of type G2, got {type(value)}.")
+
+        tmp = <G1>value
+        relic.g2_add(result.value, result.value, tmp.value)
+
+    return result
 
 
 cpdef G2 power_product_G2(values, scalars, G2 base=None):
