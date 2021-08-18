@@ -99,22 +99,28 @@ class G1:
 
 
 def neutral_G1() -> G1:
+    """Returns the neutral element of G1."""
     return G1(_relic.neutral_G1())
 
 
 def generator_G1(factor: Optional[BN] = None) -> G1:
+    """Returns the generator of G1 and if the optional factor is given, the generator multiplied by
+    this factor is returned."""
     return G1(_relic.generator_G1(factor))
 
 
 def rand_G1() -> G1:
+    """Returns a randomly sampled element from G1."""
     return G1(_relic.rand_G1())
 
 
 def hash_to_G1(data: bytes) -> G1:
+    """Hashes a byte string to an element in G1."""
     return G1(_relic.hash_to_G1(data))
 
 
 def sum_G1(values: Iterable[G1], base: Optional[G1] = None) -> G1:
+    """Computes the sum of all elements."""
     return G1(
         _relic.product_G1(
             (value.element for value in values),
@@ -126,6 +132,7 @@ def sum_G1(values: Iterable[G1], base: Optional[G1] = None) -> G1:
 def product_sum_G1(
     values: Sequence[G1], scalars: Sequence[BN], base: Optional[G1] = None
 ) -> G1:
+    """Computes the sum of all elements multiplied by the respective scalars."""
     return G1(
         _relic.power_product_G1(
             tuple(g1.element for g1 in values),
@@ -208,22 +215,28 @@ class G2:
 
 
 def neutral_G2() -> G2:
+    """Returns the neutral element of G2."""
     return G2(_relic.neutral_G2())
 
 
 def generator_G2(factor: Optional[BN] = None) -> G2:
+    """Returns the generator of G2 and if the optional factor is given, the generator multiplied by
+    this factor is returned."""
     return G2(_relic.generator_G2(factor))
 
 
 def rand_G2() -> G2:
+    """Returns a randomly sampled element from G2."""
     return G2(_relic.rand_G2())
 
 
 def hash_to_G2(data: bytes) -> G2:
+    """Hashes a byte string to an element in G2."""
     return G2(_relic.hash_to_G2(data))
 
 
 def sum_G2(values: Iterable[G2], base: Optional[G2] = None) -> G2:
+    """Computes the sum of all elements."""
     return G2(
         _relic.product_G2(
             (value.element for value in values),
@@ -235,6 +248,7 @@ def sum_G2(values: Iterable[G2], base: Optional[G2] = None) -> G2:
 def product_sum_G2(
     values: Sequence[G2], scalars: Sequence[BN], base: Optional[G2] = None
 ) -> G2:
+    """Computes the sum of all elements multiplied by the respective scalars."""
     return G2(
         _relic.power_product_G2(
             tuple(g1.element for g1 in values),
@@ -252,8 +266,10 @@ def mul_sim_G2(
 
 
 def pair(g1: G1, g2: G2) -> GT:
+    """Computes the pairing of g1 and g2."""
     return _relic.pair(g1.element, g2.element)
 
 
 def pair_product(*args: Tuple[G1, G2]) -> GT:
+    """Given a list of pairs of G1 and G2 elements, computes the product of their pairings."""
     return _relic.pair_product(*((g1.element, g2.element) for g1, g2 in args))
