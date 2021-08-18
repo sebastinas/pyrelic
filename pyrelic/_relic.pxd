@@ -59,3 +59,4 @@ cdef class GT:
 cpdef GT generator_GT(BN exponent=*)
 cpdef GT rand_GT()
 cpdef GT neutral_GT()
+cpdef GT product_GT(values, GT base=*)

@@ -49,6 +49,7 @@ from ._relic import (
     GT,
     generator_GT,
     neutral_GT,
+    product_GT,
     rand_GT,
     # pairings
     pair,

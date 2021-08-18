@@ -22,7 +22,7 @@ import warnings
 from typing import Union, Optional, Tuple, Any, Sequence, Iterable
 from . import _relic
 from ._relic import BN, neutral_BN, rand_BN_mod, rand_BN_order, BN_from_int
-from ._relic import GT, neutral_GT, rand_GT, generator_GT
+from ._relic import GT, neutral_GT, rand_GT, generator_GT, product_GT
 
 """
 Helper classes with additive notations for G1 and G2

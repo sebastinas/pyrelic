@@ -890,12 +890,32 @@ cpdef GT rand_GT():
     relic.gt_rand(value.value)
     return value
 
+
 cpdef GT neutral_GT():
     """Returns the neutral element of GT."""
 
     cdef GT value = GT()
     relic.gt_set_unity(value.value)
     return value
+
+
+cpdef GT product_GT(values, GT base=None):
+    """Computes the product of all elements."""
+
+    cdef GT tmp, result = GT()
+    if base is not None:
+        relic.gt_copy(result.value, base.value)
+    else:
+        relic.gt_set_unity(result.value)
+
+    for value in values:
+        if not isinstance(value, GT):
+            raise TypeError(f"Expected element of type GT, got {type(value)}.")
+
+        tmp = <GT>value
+        relic.gt_mul(result.value, result.value, tmp.value)
+
+    return result
 
 
 cpdef GT pair(G1 g1, G2 g2):
