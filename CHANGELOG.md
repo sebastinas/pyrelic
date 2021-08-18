@@ -1,3 +1,12 @@
+0.3
+---
+
+* Add `power_product_*` and `product_sum_*` functions in favor of `mul_sim_*`. The deprecated
+  `mul_sim_*` functions will be removed in version 0.4.
+* Add `product_*` and `sum_*` helper functions.
+* Handle some relic error cases (reading of invalid data, BN growing larger than an internal limit)
+  more gracefully.
+
 0.2.1
 -----
 
