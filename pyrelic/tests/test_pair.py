@@ -21,7 +21,6 @@
 import unittest
 import pyrelic
 import math
-import sys
 
 
 class TestPair(unittest.TestCase):
@@ -56,7 +55,6 @@ class TestPairingProduct(unittest.TestCase):
 
         self.assertEqual(pyrelic.pair_product((g1, g2)), pyrelic.pair(g1, g2))
 
-    @unittest.skipUnless(sys.version_info[:2] >= (3, 8), "Requires math.prod")
     def test_pair_product_l(self):
         l = 5
         elements = [(pyrelic.rand_G1(), pyrelic.rand_G2()) for _ in range(l)]
