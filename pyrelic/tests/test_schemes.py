@@ -1,4 +1,4 @@
-# Copyright 2021 Sebastian Ramacher <sebastian.ramacher@ait.ac.at>
+# Copyright 2021-2022 Sebastian Ramacher <sebastian.ramacher@ait.ac.at>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -85,3 +85,30 @@ class TestSchemes:
 
         for l in range(3, 10):
             spseq.test_spseq(l)
+
+    @unittest.skipUnless(has_examples and is_py37, "TBEQ example is not available")
+    def test_tbeq(self):
+        from examples.chac.tbeq import test_tbeq
+
+        for l in range(3, 10):
+            test_tbeq(l)
+
+    @unittest.skipUnless(has_examples and is_py37, "AAEQ example is not available")
+    def test_aaeq(self):
+        from examples.chac.aaeq import test_aaeq
+
+        for l in range(3, 10):
+            test_aaeq(l)
+
+    @unittest.skipUnless(has_examples and is_py37, "SFPK example is not available")
+    def test_sfpk(self):
+        from examples.chac.splitsign import test_splitsign
+
+        test_splitsign()
+
+    @unittest.skipUnless(has_examples and is_py37, "SFPK example is not available")
+    def test_chac(self):
+        from examples.chac.chac import test_chac
+
+        for num_attrs in range(3, 10):
+            test_chac(num_attrs)
