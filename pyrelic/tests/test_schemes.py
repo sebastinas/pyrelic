@@ -19,7 +19,6 @@
 # SOFTWARE.
 
 import unittest
-import sys
 
 import pyrelic
 
@@ -28,9 +27,6 @@ try:
     import examples
 except ImportError:
     has_examples = False
-
-is_py37 = sys.version_info[:2] >= (3, 7)
-is_py38 = sys.version_info[:2] >= (3, 8)
 
 
 class DHKE:
@@ -61,52 +57,52 @@ class TestDHKEG2(DHKE, unittest.TestCase):
 
 
 class TestSchemes:
-    @unittest.skipUnless(has_examples and is_py37, "BF-IBE example is not available")
+    @unittest.skipUnless(has_examples, "BF-IBE example is not available")
     def test_bfibe(self):
         from examples import bfibe
 
         bfibe.test_bf_ibe()
 
-    @unittest.skipUnless(has_examples and is_py37, "BLS example is not available")
+    @unittest.skipUnless(has_examples, "BLS example is not available")
     def test_bls(self):
         from examples import bls
 
         bls.test_bls()
 
-    @unittest.skipUnless(has_examples and is_py38, "HPRA example is not available")
+    @unittest.skipUnless(has_examples, "HPRA example is not available")
     def test_hpra(self):
         from examples import hpra
 
         hpra.test_hpra()
 
-    @unittest.skipUnless(has_examples and is_py37, "SPSEQ example is not available")
+    @unittest.skipUnless(has_examples, "SPSEQ example is not available")
     def test_spseq(self):
         from examples import spseq
 
         for l in range(3, 10):
             spseq.test_spseq(l)
 
-    @unittest.skipUnless(has_examples and is_py37, "TBEQ example is not available")
+    @unittest.skipUnless(has_examples, "TBEQ example is not available")
     def test_tbeq(self):
         from examples.chac.tbeq import test_tbeq
 
         for l in range(3, 10):
             test_tbeq(l)
 
-    @unittest.skipUnless(has_examples and is_py37, "AAEQ example is not available")
+    @unittest.skipUnless(has_examples, "AAEQ example is not available")
     def test_aaeq(self):
         from examples.chac.aaeq import test_aaeq
 
         for l in range(3, 10):
             test_aaeq(l)
 
-    @unittest.skipUnless(has_examples and is_py37, "SFPK example is not available")
+    @unittest.skipUnless(has_examples, "SFPK example is not available")
     def test_sfpk(self):
         from examples.chac.splitsign import test_splitsign
 
         test_splitsign()
 
-    @unittest.skipUnless(has_examples and is_py37, "SFPK example is not available")
+    @unittest.skipUnless(has_examples, "SFPK example is not available")
     def test_chac(self):
         from examples.chac.chac import test_chac
 
