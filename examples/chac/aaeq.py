@@ -22,7 +22,7 @@ import hashlib
 import secrets
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, Sequence, Tuple, List
+from typing import Iterable, Optional, Sequence, Tuple, List
 
 from pyrelic import (
     BN,
@@ -62,7 +62,7 @@ class PrivateKey:
     """AAEQ private key (for an attribute)."""
 
     x: tbeq.PrivateKey
-    k: BN
+    k: bytes
     attrName: str
     pk: PublicKey
 
@@ -94,10 +94,10 @@ def setup(
     for attribute in attributes:
         sk, pk = tbeq.keygen(l)
 
-        pk = PublicKey(pk, attribute)
-        mpk_list.append(pk)
-        sk = PrivateKey(sk, k, attribute, pk)
-        msk_list.append(sk)
+        aaeq_pk = PublicKey(pk, attribute)
+        mpk_list.append(aaeq_pk)
+        aaeq_sk = PrivateKey(sk, k, attribute, aaeq_pk)
+        msk_list.append(aaeq_sk)
 
     return MainPrivateKey(tuple(msk_list)), MainPublicKey(tuple(mpk_list))
 
@@ -132,7 +132,7 @@ def sign(
 def verify(
     mpk: MainPublicKey,
     message: MessageVector,
-    attributes: List[Attribute],
+    attributes: Sequence[Attribute],
     aggr_sigma: Signature,
 ) -> bool:
     """Verify the signature on a message vector."""
@@ -203,11 +203,13 @@ def _findsk(msk: MainPrivateKey, attribute: str) -> PrivateKey:
     assert False
 
 
-def _pks_for_attr(mpk: MainPublicKey, attributes: List[Attribute]) -> List[PublicKey]:
+def _pks_for_attr(
+    mpk: MainPublicKey, attributes: Iterable[Attribute]
+) -> Tuple[PublicKey, ...]:
     return tuple(_findpk(mpk, attr.name) for attr in attributes)
 
 
-def aidgen(attributes: List[Attribute], nonce: bytes) -> bytes:
+def aidgen(attributes: Iterable[Attribute], nonce: bytes) -> bytes:
     """Generate AID from a list of attributes and a nonce."""
 
     sth = hashlib.shake_256()
@@ -234,6 +236,7 @@ def test_aaeq(l: int) -> None:
     assert verify(mpk, message, [attr3], sigma3)
 
     sigma = aggregate(mpk, [sigma1, sigma3])
+    assert sigma is not None
     assert verify(mpk, message, [attr1, attr3], sigma)
 
     attr2 = Attribute("attr2", "value2")

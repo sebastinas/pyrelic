@@ -29,8 +29,8 @@ from .splitsign import Parameters
 from .aaeq import (
     Attribute,
     aidgen,
-    PublicKey as IssuerPublicKey,
-    PrivateKey as IssuerPrivateKey,
+    MainPublicKey as IssuerPublicKey,
+    MainPrivateKey as IssuerPrivateKey,
 )
 
 
@@ -111,7 +111,7 @@ core_show = core_obtain
 
 
 def helper_obtain(
-    _attributes: List[Attribute], _nonce: bytes, ipk: IssuerPublicKey, apreq: APSig
+    _attributes: Sequence[Attribute], _nonce: bytes, ipk: IssuerPublicKey, apreq: APSig
 ) -> AReq:
     """Perform steps of the obtain procedure that run on the helper."""
 
@@ -120,7 +120,7 @@ def helper_obtain(
 
 
 def helper_show(
-    attributes: List[Attribute],
+    attributes: Sequence[Attribute],
     nonce: bytes,
     credentials: Credentials,
     ipk: IssuerPublicKey,
@@ -136,6 +136,7 @@ def helper_show(
     aggrsigma = aaeq.aggregate(
         ipk, [credentials.signatures[attribute.name] for attribute in attributes]
     )
+    assert aggrsigma is not None
 
     # rerandomize
     r = rand_BN_order()
@@ -148,7 +149,7 @@ def helper_show(
 
 
 def issue(
-    attributes: List[Attribute],
+    attributes: Sequence[Attribute],
     nonce: bytes,
     areq: AReq,
     isk: IssuerPrivateKey,
@@ -171,7 +172,7 @@ def issue(
 
 
 def verify(
-    attributes: List[Attribute],
+    attributes: Sequence[Attribute],
     nonce: bytes,
     asig: ASig,
     ipk: IssuerPublicKey,
@@ -205,9 +206,9 @@ def test_chac(num_attributes: int) -> None:
     aprequest = core_obtain(aid_o, ipk, ssk)
     areq = helper_obtain(attributes_o, nonce_o, ipk, aprequest)
 
-    cred = issue(attributes_o, nonce_o, areq, isk, params)
-    assert cred is not None
-    cred = cred[0]
+    credential = issue(attributes_o, nonce_o, areq, isk, params)
+    assert credential is not None
+    cred = credential[0]
 
     for t in range(1, num_attributes):
         attributes_s = attributes_o[:t]
