@@ -47,6 +47,8 @@ pairing-based schemes:
   based on the BF IBE.
 * `examples/spseq.py`: Implements a [structure-preserving signature
   scheme on equivalence classes](https://doi.org/10.1007/978-3-662-45611-8_26).
+* `examples/chac`: Implements [core/helper anonymous
+  credentials](https://doi.org/10.1145/3460120.3484582).
 
 ## License
 
@@ -55,5 +57,7 @@ Institute of Technology).
 
 ## Acknowledgements
 
-This work has been partially funded by the European Union’s Horizon 2020 research and innovation
-programme under grant agreement No 871473 ([KRAKEN](https://krakenh2020.eu/)).
+This work has been partially funded by the European Union’s Horizon 2020
+research and innovation programme under grant agreement No 871473
+([KRAKEN](https://krakenh2020.eu/)) and by ECSEL Joint Undertaking under grant
+agreement No 826610 ([Comp4Drones](https://www.comp4drones.eu/)).
