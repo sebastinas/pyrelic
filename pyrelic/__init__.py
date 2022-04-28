@@ -19,7 +19,8 @@
 # SOFTWARE.
 
 import warnings
-from typing import Optional, Sequence
+from types import TracebackType
+from typing import Literal, Optional, Sequence, Type
 
 from ._relic import (
     # BN
@@ -87,8 +88,13 @@ class Relic:
     def __enter__(self) -> "Relic":
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        pass
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> Literal[False]:
+        return False
 
 
 def mul_sim_G1(
