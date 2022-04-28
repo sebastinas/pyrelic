@@ -14,7 +14,6 @@ try:
         except OSError:
             return False
 
-
 except ImportError:
     have_pkgconfig = False
 

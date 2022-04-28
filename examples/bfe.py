@@ -197,7 +197,7 @@ def encaps(pk: PublicKey) -> Tuple[bytes, Ciphertext]:
 
     u = generator_G1(r)
     # instead of applying r to each pairing, precompute pk ** r
-    pkr = pk.pk ** r
+    pkr = pk.pk**r
 
     return k, Ciphertext(
         u,
@@ -237,7 +237,7 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
 
     # derive r and k
     r, k = hash_r(key, sk.key_size)
-    pkr = sk.pk ** r
+    pkr = sk.pk**r
 
     # recompute ciphertext and verify equality
     recomputed_u = generator_G1(r)
@@ -249,7 +249,7 @@ def decaps(sk: PrivateKey, ctxt: Ciphertext) -> Optional[bytes]:
 
 def test_bfe() -> None:
     # Generate a key pair (this will take forever)
-    sk, pk = keygen(32, 2 ** 19, 0.0009765625)
+    sk, pk = keygen(32, 2**19, 0.0009765625)
 
     for _ in range(32):
         # Encapsulate a new key

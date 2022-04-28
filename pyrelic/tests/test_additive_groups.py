@@ -149,8 +149,8 @@ class TestPair(unittest.TestCase):
         g2 = additive.rand_G2()
         gt_base = additive.pair(g1, g2)
 
-        self.assertEqual(additive.pair(g1 * x, g2), gt_base ** x)
-        self.assertEqual(additive.pair(g1, g2 * x), gt_base ** x)
+        self.assertEqual(additive.pair(g1 * x, g2), gt_base**x)
+        self.assertEqual(additive.pair(g1, g2 * x), gt_base**x)
 
 
 class TestPairingProduct(unittest.TestCase):

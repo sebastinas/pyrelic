@@ -41,11 +41,11 @@ class DHKE:
 
         for i in (b"some id", b"your name"):
             p = self.hash_to_curve(i)
-            p1 = p ** s1
-            p2 = p1 ** s2
+            p1 = p**s1
+            p2 = p1**s2
 
-            p1_ = p ** s2
-            p2_ = p1_ ** s1
+            p1_ = p**s2
+            p2_ = p1_**s1
 
             self.assertEqual(p2, p2_)
 

@@ -142,7 +142,7 @@ def hpra_vgen(pp: HPRAParams) -> Tuple[HPRAVMK, None]:
 def hpra_sign(sk: HPRASPrivateKey, ms: Sequence[BN], tau: Any, id_=None) -> G1:
     sigma = hpra_hash(tau, id_ if id_ is not None else sk.pk.pk1)
     sigma = power_product_G1(sk.pk.pp.gs, ms, sigma)
-    return sigma ** sk.beta
+    return sigma**sk.beta
 
 
 def hpra_verify(pk: HPRASPublicKey, ms: Sequence[BN], tau: Any, sigma: G1) -> bool:
@@ -152,7 +152,7 @@ def hpra_verify(pk: HPRASPublicKey, ms: Sequence[BN], tau: Any, sigma: G1) -> bo
 
 
 def hpra_vrgen(pk: HPRASPublicKey, mk: HPRAVMK, rk: None = None) -> HPRAAK:
-    ak = pk.pk2 ** mk.alpha
+    ak = pk.pk2**mk.alpha
     return HPRAAK(ak)
 
 
@@ -165,7 +165,7 @@ def hpra_agg(
 ) -> Tuple[T, GT]:
     msg = evalf(msgs, weights)
     mu = pair_product(
-        *((sigma ** weight, ak.ak) for sigma, weight, ak in zip(sigmas, weights, aks))
+        *((sigma**weight, ak.ak) for sigma, weight, ak in zip(sigmas, weights, aks))
     )
     return msg, mu
 
@@ -280,7 +280,7 @@ class HPREReEncKey:
 
 
 def hpre_rg(sk: HPREPrivateKey, pk: HPREPublicKey) -> HPREReEncKey:
-    return HPREReEncKey(tuple(pk2 ** a1 for pk2, a1 in zip(pk.pk2, sk.a1)))
+    return HPREReEncKey(tuple(pk2**a1 for pk2, a1 in zip(pk.pk2, sk.a1)))
 
 
 class HPRECiphertextLevel(enum.Enum):
@@ -304,7 +304,7 @@ def hpre_encrypt(
 ) -> HPRECiphertext:
     k = rand_BN_order()
     cs = tuple(
-        (generator_GT(cast(BN, m)) if not is_mapped else cast(GT, m)) * pk1 ** k
+        (generator_GT(cast(BN, m)) if not is_mapped else cast(GT, m)) * pk1**k
         for m, pk1 in zip(ms, pk.pk1)
     )
     if level == HPRECiphertextLevel.L1:
@@ -394,7 +394,7 @@ def comb_params(l: int, min_exps: int, max_exps: int) -> CombParams:
 
     def precompute_mapping(base: G1) -> Dict[GT, BN]:
         base_gt = pair(base, generator_G2())
-        return {base_gt ** exp: exp for exp in exps}
+        return {base_gt**exp: exp for exp in exps}
 
     return CombParams(pp, tuple(precompute_mapping(base) for base in pp.gs))
 
@@ -449,7 +449,7 @@ def comb_sign(sk: CombSPrivateKey, ms: Sequence[BN], tau: Any) -> CombSignature:
         tuple(
             pair(lhs, rhs)
             for lhs, rhs in itertools.chain(
-                ((base ** m, g2) for base, m in zip(sk.sk.pk.pp.gs, ms)),
+                ((base**m, g2) for base, m in zip(sk.sk.pk.pp.gs, ms)),
                 ((r, sk.sk.pk.pk2),),
             )
         ),
@@ -566,7 +566,7 @@ def comb_averify(
             mk.pp.precomputed[idx][msg]
             for idx, msg in enumerate(msu)
         )
-        if hpra_averify(mk.mk, msu, mu / (r ** mk.mk.alpha), tau, ids, weights)
+        if hpra_averify(mk.mk, msu, mu / (r**mk.mk.alpha), tau, ids, weights)
         else False
     )
 

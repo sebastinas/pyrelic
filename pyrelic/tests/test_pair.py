@@ -42,8 +42,8 @@ class TestPair(unittest.TestCase):
         g2 = pyrelic.rand_G2()
         gt_base = pyrelic.pair(g1, g2)
 
-        self.assertEqual(pyrelic.pair(g1 ** x, g2), gt_base ** x)
-        self.assertEqual(pyrelic.pair(g1, g2 ** x), gt_base ** x)
+        self.assertEqual(pyrelic.pair(g1**x, g2), gt_base**x)
+        self.assertEqual(pyrelic.pair(g1, g2**x), gt_base**x)
 
 
 class TestPairingProduct(unittest.TestCase):

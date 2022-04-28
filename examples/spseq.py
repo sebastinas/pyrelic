@@ -122,8 +122,8 @@ def change_representation(
     group_order = order()
     psi = rand_BN_order()
     psi_inv = psi.mod_inv(group_order)
-    return MessageVector(tuple(m ** mu for m in message.m)), Signature(
-        sigma.z ** ((psi * mu) % group_order), sigma.y ** psi_inv, sigma.yhat ** psi_inv
+    return MessageVector(tuple(m**mu for m in message.m)), Signature(
+        sigma.z ** ((psi * mu) % group_order), sigma.y**psi_inv, sigma.yhat**psi_inv
     )
 
 

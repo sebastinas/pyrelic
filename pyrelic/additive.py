@@ -60,14 +60,14 @@ class G1:
         return G1(self.element.invert())
 
     def __mul__(self, rhs: Union[int, BN]) -> "G1":
-        return G1(self.element ** rhs)
+        return G1(self.element**rhs)
 
     def __imul__(self, rhs: Union[int, BN]) -> "G1":
-        self.element = self.element ** rhs
+        self.element = self.element**rhs
         return self
 
     def __rmul__(self, lhs: Union[int, BN]) -> "G1":
-        return G1(self.element ** lhs)
+        return G1(self.element**lhs)
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, G1):
@@ -176,14 +176,14 @@ class G2:
         return G2(self.element.invert())
 
     def __mul__(self, rhs: Union[int, BN]) -> "G2":
-        return G2(self.element ** rhs)
+        return G2(self.element**rhs)
 
     def __imul__(self, rhs: Union[int, BN]) -> "G2":
-        self.element = self.element ** rhs
+        self.element = self.element**rhs
         return self
 
     def __rmul__(self, lhs: Union[int, BN]) -> "G2":
-        return G2(self.element ** lhs)
+        return G2(self.element**lhs)
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, G2):

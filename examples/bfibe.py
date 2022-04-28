@@ -132,7 +132,7 @@ def encrypt(pk: PublicKey, identity: bytes, message: bytes) -> Ciphertext:
     q_id = map_identity(identity)
     # Instead of computing g_id^r, we raise q_id to the r before pairing it which is
     # more efficient.
-    g_id_r = pair(q_id ** r, pk.pk)
+    g_id_r = pair(q_id**r, pk.pk)
     v = hash_and_xor(g_id_r, message)
 
     return Ciphertext(u, v)

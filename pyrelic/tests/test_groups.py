@@ -44,7 +44,7 @@ class GroupTests:
         element = self.neutral()
         exp = pyrelic.rand_BN_order()
 
-        self.assertEqual(element ** exp, element)
+        self.assertEqual(element**exp, element)
 
     def test_is_neutral(self):
         self.assertTrue(self.neutral().is_neutral())
@@ -68,37 +68,37 @@ class GroupTests:
 
     def test_div_exp(self):
         lhs = self.rand()
-        self.assertEqual(lhs ** -1, self.neutral() / lhs)
+        self.assertEqual(lhs**-1, self.neutral() / lhs)
 
     def test_exp(self):
         element = self.rand()
 
-        self.assertEqual(element ** 2, element * element)
+        self.assertEqual(element**2, element * element)
 
     def test_exp_BN(self):
         element = self.rand()
         exp = pyrelic.rand_BN_order()
 
-        self.assertEqual(element ** int(exp), element ** exp)
+        self.assertEqual(element ** int(exp), element**exp)
 
     def test_exp_negative(self):
         element = self.rand()
         exp = pyrelic.rand_BN_order()
 
-        self.assertEqual(element ** -int(exp), element ** -exp)
-        self.assertEqual(element ** -exp, self.neutral() / element ** exp)
-        self.assertEqual(element ** -exp, (self.neutral() / element) ** exp)
+        self.assertEqual(element ** -int(exp), element**-exp)
+        self.assertEqual(element**-exp, self.neutral() / element**exp)
+        self.assertEqual(element**-exp, (self.neutral() / element) ** exp)
 
     def test_exp_0(self):
         element = self.rand()
 
-        self.assertEqual(element ** 0, self.neutral())
+        self.assertEqual(element**0, self.neutral())
         self.assertEqual(element ** pyrelic.neutral_BN(), self.neutral())
 
     def test_exp_1(self):
         element = self.rand()
 
-        self.assertEqual(element ** 1, element)
+        self.assertEqual(element**1, element)
 
 
 class TestG1(GroupTests, unittest.TestCase):
