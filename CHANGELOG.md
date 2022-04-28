@@ -1,3 +1,11 @@
+0.3.1
+-----
+
+* Test with Python 3.10.
+* Drop support for Python 3.6 and 3.7.
+* Add an implementation of core/helper anonymous credentials as example.
+* Link with `advapi32` on Windows. This is required when linking to `relic`.
+
 0.3
 ---
 
