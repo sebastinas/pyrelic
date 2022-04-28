@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import collections
+import platform
 from setuptools import setup, Extension
 
 
@@ -23,6 +24,8 @@ if have_pkgconfig and pkgconfig_exists("relic"):
 else:
     flags = collections.defaultdict(list)
     flags["libraries"] = ["relic"]
+    if platform.system() == "windows":
+        flags["libraries"].append("advapi32")
 
 
 ext_modules = [
