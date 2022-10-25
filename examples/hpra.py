@@ -572,7 +572,7 @@ def comb_averify(
 
 
 def test_comb() -> None:
-    l = 3  # length of the message vectors
+    l = 3  # Length of the message vectors
     pp = comb_params(l, -100, 100)
     # Generate two signer keys
     id1, sk1, pk1 = comb_sgen(pp)
@@ -582,29 +582,32 @@ def test_comb() -> None:
 
     msg1 = tuple(BN_from_int(x + 1) for x in range(l))
     msg2 = tuple(BN_from_int(2 * x) for x in range(l))
-
     tau = b"some random tag"
 
-    # Sign a message vector
+    # Sign message vectors
     sigma1 = comb_sign(sk1, msg1, tau)
+    sigma2 = comb_sign(sk2, msg2, tau)
     # Compute aggregation key for first user
     rk1 = comb_srgen(sk1, aux)
     ak1 = comb_vrgen(pk1, mk, rk1)
+    # Compute aggregation key for second user
+    rk2 = comb_srgen(sk2, aux)
+    ak2 = comb_vrgen(pk2, mk, rk2)
 
-    weights: Tuple[BN, ...] = (BN_from_int(1),)
-    ctxt, mu = comb_agg((ak1,), (sigma1,), weights)
+    # Aggregate and reencrypt
+    weights = (BN_from_int(2), BN_from_int(1))
+    ctxt, mu = comb_agg((ak1, ak2), (sigma1, sigma2), weights)
 
-    expected_msg = tuple((m1 * weights[0]) for m1 in msg1)
-    msg = comb_averify(mk, ctxt, mu, tau, (id1,), weights)
+    expected_msg = tuple(
+        (m1 * weights[0] + m2 * weights[1]) for m1, m2 in zip(msg1, msg2)
+    )
+    msg = comb_averify(mk, ctxt, mu, tau, (id1, id2), weights)
 
     assert msg
     assert expected_msg == msg
 
     # Sign a message vector
     sigma2 = comb_sign(sk2, msg2, tau)
-    # Compute aggregation key for second user
-    rk2 = comb_srgen(sk2, aux)
-    ak2 = comb_vrgen(pk2, mk, rk2)
 
     # Aggregate and reencrypt
     weights = (BN_from_int(2), BN_from_int(1))
