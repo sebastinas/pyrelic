@@ -7,8 +7,8 @@ personal needs and they do not cover the full `relic` API.
 ## Dependencies
 
 `pyrelic` requires the following dependencies to successfully build and install:
-* `relic >= 0.5.0` with pairing support enabled.
-* `Cython >= 0.28` (optional, only for building). If Cython is not available, the C files are not
+* `relic >= 0.7` with pairing support enabled.
+* `Cython >= 3` (optional, only for building). If Cython is not available, the C files are not
   regenerated from their source.
 * `pkgconfig` (optional, only for building). If `pkgconfig` is not available, the build system
   assumes that `relic` can be linked as `-lrelic`.
