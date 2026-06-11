@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# cython: language_level=3, binding=True
+# cython: language_level=3
 
 from . cimport relic
 from cpython cimport int as Integer

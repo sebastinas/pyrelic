@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# cython: language_level=3, binding=True, c_api_binop_methods=True
+# cython: language_level=3, binding=True
 
 from . cimport relic
 from cpython.object cimport Py_LT, Py_EQ, Py_GT, Py_LE, Py_NE, Py_GE
@@ -146,16 +146,9 @@ cdef class BN:
         relic.bn_add(self.value, self.value, tmp.value)
         return self
 
-    def __add__(self, other):
+    def __add__(BN self, other):
         cdef BN result
-        cdef BN self_bn
-
-        if isinstance(self, BN):
-            self_bn = <BN>self
-        elif isinstance(self, int):
-            self_bn = BN_from_int(self)
-        else:
-            return NotImplemented
+        cdef BN tmp
 
         if isinstance(other, BN):
             tmp = <BN>other
@@ -164,12 +157,15 @@ cdef class BN:
         else:
             return NotImplemented
 
-        if not _check_add_length(self_bn.value, tmp.value):
+        if not _check_add_length(self.value, tmp.value):
             raise ValueError("Result of addition is too large.")
 
         result = BN()
-        relic.bn_add(result.value, self_bn.value, tmp.value)
+        relic.bn_add(result.value, self.value, tmp.value)
         return result
+
+    def __radd__(BN self, other):
+        return self + other
 
     def __isub__(self, other):
         cdef BN tmp
@@ -186,16 +182,9 @@ cdef class BN:
         relic.bn_sub(self.value, self.value, tmp.value)
         return self
 
-    def __sub__(self, other):
+    def __sub__(BN self, other):
         cdef BN result
-        cdef BN self_bn
-
-        if isinstance(self, BN):
-            self_bn = <BN>self
-        elif isinstance(self, int):
-            self_bn = BN_from_int(self)
-        else:
-            return NotImplemented
+        cdef BN tmp
 
         if isinstance(other, BN):
             tmp = <BN>other
@@ -204,12 +193,31 @@ cdef class BN:
         else:
             return NotImplemented
 
-        if not _check_add_length(self_bn.value, tmp.value):
+        if not _check_add_length(self.value, tmp.value):
             raise ValueError("Result of subtraction is too large.")
 
         result = BN()
-        relic.bn_sub(result.value, self_bn.value, tmp.value)
+        relic.bn_sub(result.value, self.value, tmp.value)
         return result
+
+    def __rsub__(BN self, other):
+        cdef BN result
+        cdef BN tmp
+
+        if isinstance(other, BN):
+            tmp = <BN>other
+        elif isinstance(other, int):
+            tmp = BN_from_int(other)
+        else:
+            return NotImplemented
+
+        if not _check_add_length(self.value, tmp.value):
+            raise ValueError("Result of subtraction is too large.")
+
+        result = BN()
+        relic.bn_sub(result.value, tmp.value, self.value)
+        return result
+
 
     def __neg__(self):
         cdef BN result = BN()
@@ -231,17 +239,9 @@ cdef class BN:
         relic.bn_mul(self.value, self.value, (<BN>other).value)
         return self
 
-    def __mul__(self, other):
+    def __mul__(BN self, other):
         cdef BN result
-        cdef BN self_bn
         cdef BN tmp
-
-        if isinstance(self, BN):
-            self_bn = <BN>self
-        elif isinstance(self, int):
-            self_bn = BN_from_int(self)
-        else:
-            return NotImplemented
 
         if isinstance(other, BN):
             tmp = <BN>other
@@ -250,12 +250,15 @@ cdef class BN:
         else:
             return NotImplemented
 
-        if not _check_mul_length(self_bn.value, tmp.value):
+        if not _check_mul_length(self.value, tmp.value):
             raise ValueError("Result of multiplication is too large.")
 
         result = BN()
-        relic.bn_mul(result.value, self_bn.value, tmp.value)
+        relic.bn_mul(result.value, self.value, tmp.value)
         return result
+
+    def __rmul__(BN self, other):
+        return self * other
 
     def __mod__(BN self, BN other):
         cdef BN result = BN()
