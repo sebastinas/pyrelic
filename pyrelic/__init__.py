@@ -20,7 +20,8 @@
 
 import warnings
 from types import TracebackType
-from typing import Literal, Optional, Sequence, Type
+from typing import Literal
+from collections.abc import Sequence
 
 from ._relic import (
     # BN
@@ -90,22 +91,22 @@ class Relic:
 
     def __exit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
     ) -> Literal[False]:
         return False
 
 
 def mul_sim_G1(
-    values: Sequence[G1], scalars: Sequence[BN], base: Optional[G1] = None
+    values: Sequence[G1], scalars: Sequence[BN], base: G1 | None = None
 ) -> G1:
     warnings.warn("Use power_product_G1 instead.", DeprecationWarning)
     return power_product_G1(values, scalars, base)
 
 
 def mul_sim_G2(
-    values: Sequence[G2], scalars: Sequence[BN], base: Optional[G2] = None
+    values: Sequence[G2], scalars: Sequence[BN], base: G2 | None = None
 ) -> G2:
     warnings.warn("Use power_product_G2 instead.", DeprecationWarning)
     return power_product_G2(values, scalars, base)
