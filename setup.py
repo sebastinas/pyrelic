@@ -4,7 +4,6 @@ import collections
 import platform
 from setuptools import setup, Extension
 
-
 have_pkgconfig = True
 try:
     import pkgconfig
